@@ -75,7 +75,7 @@ def test_unit_schema_keeps_saved_station_preferences():
     )
 
     assert defaults["unit_rain"] == "cm"
-    assert defaults["unit_rain_rate"] == "cm/h"
+    assert defaults["unit_rain_rate"] == "mm/h"
 
 
 @pytest.mark.asyncio

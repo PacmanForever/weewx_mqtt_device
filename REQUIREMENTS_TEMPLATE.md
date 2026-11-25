@@ -6,7 +6,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 
 - **Display name**: WeeWX MQTT Device
 - **Domain**: `weewx_mqtt_device`
-- **Version**: `0.5.1` (GitHub tag/release `v0.5.1`)
+- **Version**: `0.5.2` (GitHub tag/release `v0.5.2`)
 - **Minimum supported Home Assistant version**: [TODO]
 - **Maintainers/code owners**: `@PacmanForever`
 

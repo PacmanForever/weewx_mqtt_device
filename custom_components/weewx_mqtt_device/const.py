@@ -32,10 +32,20 @@ def observation_unit(
     """Return a shared unit setting, with support for older per-observation options."""
     if observation.unit_type is None:
         return observation.default_unit
-    return settings.get(
-        f"unit_{observation.unit_type}",
-        settings.get(f"unit_{observation.key}", observation.default_unit),
+    return normalize_unit_choice(
+        observation.unit_type,
+        settings.get(
+            f"unit_{observation.unit_type}",
+            settings.get(f"unit_{observation.key}", observation.default_unit),
+        ),
     )
+
+
+def normalize_unit_choice(unit_type: str, unit: str | None) -> str | None:
+    """Replace units no longer supported by Home Assistant with a valid equivalent."""
+    if unit_type == "rain_rate" and unit == "cm/h":
+        return "mm/h"
+    return unit
 
 
 OBSERVATIONS = (
@@ -104,7 +114,7 @@ OBSERVATIONS = (
         "current_rain_rate",
         "rainRate_cm_per_hour",
         unit_type="rain_rate",
-        default_unit="cm/h",
+        default_unit="mm/h",
         precision=1,
         device_class="precipitation_intensity",
     ),
@@ -355,7 +365,7 @@ UNIT_CHOICES = {
     "distance": ("m", "ft"),
     "pressure": ("hPa", "mbar", "inHg"),
     "rain": ("mm", "cm", "in"),
-    "rain_rate": ("mm/h", "cm/h", "in/h"),
+    "rain_rate": ("mm/h", "in/h"),
     "wind_speed": ("km/h", "m/s", "mph", "kn"),
 }
 
@@ -364,6 +374,6 @@ UNIT_CONVERSION = {
     "distance": {"m": "m", "ft": "ft"},
     "pressure": {"hPa": "hPa", "mbar": "mbar", "inHg": "inHg"},
     "rain": {"mm": "mm", "cm": "cm", "in": "in"},
-    "rain_rate": {"mm/h": "mm/h", "cm/h": "cm/h", "in/h": "in/h"},
+    "rain_rate": {"mm/h": "mm/h", "in/h": "in/h"},
     "wind_speed": {"km/h": "km/h", "m/s": "m/s", "mph": "mph", "kn": "kn"},
 }

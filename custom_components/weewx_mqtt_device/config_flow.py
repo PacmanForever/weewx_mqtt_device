@@ -18,6 +18,7 @@ from .const import (
     DOMAIN,
     OBSERVATIONS,
     UNIT_CHOICES,
+    normalize_unit_choice,
 )
 
 
@@ -68,7 +69,7 @@ def _system_unit_defaults(unit_system: UnitSystem) -> dict[str, str]:
         "rain": precipitation,
         "rain_rate": {
             "mm": "mm/h",
-            "cm": "cm/h",
+            "cm": "mm/h",
             "in": "in/h",
         }.get(precipitation),
         "wind_speed": str(unit_system.wind_speed_unit),
@@ -103,6 +104,7 @@ def _unit_schema(
             key,
             settings.get(legacy_key, system_defaults[unit_type]),
         )
+        default = normalize_unit_choice(unit_type, default)
         schema[vol.Required(key, default=default)] = vol.In(
             choices
         )

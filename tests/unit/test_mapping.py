@@ -54,12 +54,28 @@ class MappingTests(unittest.TestCase):
         pressure = observation("atmospheric_pressure")
 
         self.assertEqual(observation_unit({}, rain), "cm")
-        self.assertEqual(observation_unit({}, rain_rate), "cm/h")
+        self.assertEqual(observation_unit({}, rain_rate), "mm/h")
         self.assertEqual(observation_unit({}, pressure), "mbar")
         self.assertEqual(decode_payload("1.23", rain, "cm"), 1.2)
-        self.assertEqual(decode_payload("1.26", rain_rate, "cm/h"), 1.3)
+        self.assertEqual(decode_payload("1.26", rain_rate, "mm/h"), 12.6)
         self.assertEqual(decode_payload("1.23", rain, "mm"), 12.3)
         self.assertEqual(decode_payload("1.26", rain_rate, "mm/h"), 12.6)
+
+    def test_legacy_rain_rate_unit_is_normalized_to_supported_unit(self):
+        rain_rate = observation("current_rain_rate")
+
+        self.assertEqual(
+            observation_unit({"unit_rain_rate": "cm/h"}, rain_rate),
+            "mm/h",
+        )
+        self.assertEqual(
+            decode_payload(
+                "1.26",
+                rain_rate,
+                observation_unit({"unit_rain_rate": "cm/h"}, rain_rate),
+            ),
+            12.6,
+        )
 
     def test_temperature_and_distance_conversions(self):
         self.assertEqual(

@@ -1,6 +1,6 @@
 # WeeWX MQTT Device
 
-> **BETA — v0.5.1:** This integration is in beta. Features and configuration may change; use it in production at your discretion and report issues through GitHub.
+> **BETA — v0.5.2:** This integration is in beta. Features and configuration may change; use it in production at your discretion and report issues through GitHub.
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPacmanForever%2Fweewx_mqtt_device%2Fmain%2Fcustom_components%2Fweewx_mqtt_device%2Fmanifest.json&query=%24.version&label=version)](https://github.com/PacmanForever/weewx_mqtt_device)
@@ -70,7 +70,7 @@ Binary entities are limited to statuses published by WeeWX, such as battery and 
 | Outdoor humidity | `outHumidity` | Percent (`%`); 0 decimals. |
 | Dew point | `dewpoint_C` | Source °C; use the shared Home Assistant temperature unit; 1 decimal. |
 | Atmospheric pressure | `barometer_mbar` | Source mbar; defaults to hPa in metric or inHg in US customary; configurable as hPa, mbar, or inHg; 0 decimals. |
-| Current rain rate | `rainRate_cm_per_hour` | Source cm/h; defaults to mm/h in metric or in/h in US customary; configurable as mm/h, cm/h, or in/h; 1 decimal. |
+| Current rain rate | `rainRate_cm_per_hour` | Source cm/h; defaults to mm/h in metric or in/h in US customary; configurable as mm/h or in/h; 1 decimal. |
 | Rain in last interval | `rain_cm` | Source cm; defaults to mm in metric or inches in US customary; configurable as mm, cm, or in; force updates even when unchanged. |
 | Rain in last hour / today / last 24 hours / month / year | `hourRain_cm`, `dayRain_cm`, `rain24_cm`, `monthRain_cm`, `yearRain_cm` | Source cm; default to mm in metric or inches in US customary; use the shared rain unit; 1 decimal. |
 | Wind speed / 5-minute gust | `windSpeed_kph`, `windGust_kph` | Source km/h; defaults to m/s in metric or mph in US customary; configurable as km/h, m/s, mph, or knots; 0 decimals. |
@@ -124,4 +124,4 @@ CI combines unit and component coverage and enforces a minimum of 95%.
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).
 
-**Release status: BETA — v0.5.1.**
+**Release status: BETA — v0.5.2.**
