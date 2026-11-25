@@ -1,0 +1,129 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a WeeWX station",
+        "description": "Home Assistant's MQTT integration must be configured first. Add one entry for each station.",
+        "data": {
+          "device_name": "Station device name",
+          "topic_prefix": "MQTT topic prefix"
+        }
+      }
+    },
+    "error": {
+      "invalid_device_name": "Enter a device name.",
+      "invalid_topic_prefix": "Enter a valid literal MQTT topic prefix without wildcards.",
+      "topic_prefix_in_use": "This topic prefix is already used by another station."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Station settings",
+        "description": "Choose the unit for each measurement. Values are converted from the units used by the WeeWX mapping.",
+        "data": {
+          "device_name": "Station device name",
+          "topic_prefix": "MQTT topic prefix",
+          "unit_cloud_base": "Cloud base unit",
+          "unit_outdoor_temperature": "Outdoor temperature unit",
+          "unit_heat_index": "Heat index unit",
+          "unit_wind_chill": "Wind chill unit",
+          "unit_dew_point": "Dew point unit",
+          "unit_atmospheric_pressure": "Atmospheric pressure unit",
+          "unit_current_rain_rate": "Current rain rate unit",
+          "unit_rain_last_interval": "Last interval rain unit",
+          "unit_rain_last_hour": "Last hour rain unit",
+          "unit_rain_today": "Today's rain unit",
+          "unit_rain_last_24h": "Last 24 hours rain unit",
+          "unit_rain_this_month": "This month's rain unit",
+          "unit_rain_this_year": "This year's rain unit",
+          "unit_wind_speed": "Wind speed unit",
+          "unit_wind_gust": "Wind gust unit"
+        }
+      }
+    },
+    "error": {
+      "invalid_device_name": "Enter a device name.",
+      "invalid_topic_prefix": "Enter a valid literal MQTT topic prefix without wildcards.",
+      "topic_prefix_in_use": "This topic prefix is already used by another station."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery_ok": {
+        "name": "Battery OK"
+      }
+    },
+    "sensor": {
+      "observation_datetime": {
+        "name": "Observation date and time"
+      },
+      "observation_time": {
+        "name": "Observation time"
+      },
+      "sunrise": {
+        "name": "Sunrise"
+      },
+      "sunset": {
+        "name": "Sunset"
+      },
+      "cloud_base": {
+        "name": "Cloud base"
+      },
+      "forecast_icon_index": {
+        "name": "Forecast icon index"
+      },
+      "outdoor_temperature": {
+        "name": "Outdoor temperature"
+      },
+      "heat_index": {
+        "name": "Heat index"
+      },
+      "wind_chill": {
+        "name": "Wind chill"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "dew_point": {
+        "name": "Dew point"
+      },
+      "atmospheric_pressure": {
+        "name": "Atmospheric pressure"
+      },
+      "current_rain_rate": {
+        "name": "Current rain rate"
+      },
+      "rain_last_interval": {
+        "name": "Rain in last interval"
+      },
+      "rain_last_hour": {
+        "name": "Rain in last hour"
+      },
+      "rain_today": {
+        "name": "Rain today"
+      },
+      "rain_last_24h": {
+        "name": "Rain in last 24 hours"
+      },
+      "rain_this_month": {
+        "name": "Rain this month"
+      },
+      "rain_this_year": {
+        "name": "Rain this year"
+      },
+      "wind_speed": {
+        "name": "Wind speed"
+      },
+      "wind_gust": {
+        "name": "Wind gust"
+      },
+      "wind_direction_degrees": {
+        "name": "Wind direction in degrees"
+      },
+      "wind_direction": {
+        "name": "Wind direction"
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Añadir una estación WeeWX",
+        "description": "Primero hay que configurar la integración MQTT de Home Assistant. Añade una entrada por estación.",
+        "data": {
+          "device_name": "Nombre del dispositivo de la estación",
+          "topic_prefix": "Prefijo de los tópicos MQTT"
+        }
+      }
+    },
+    "error": {
+      "invalid_device_name": "Introduce un nombre de dispositivo.",
+      "invalid_topic_prefix": "Introduce un prefijo MQTT literal válido, sin comodines.",
+      "topic_prefix_in_use": "Otra estación ya utiliza este prefijo de tópicos."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configuración de la estación",
+        "description": "Elige la unidad de cada medición. Los valores se convierten desde las unidades del mapping de WeeWX.",
+        "data": {
+          "device_name": "Nombre del dispositivo de la estación",
+          "topic_prefix": "Prefijo de los tópicos MQTT",
+          "unit_cloud_base": "Unidad de la base de las nubes",
+          "unit_outdoor_temperature": "Unidad de la temperatura exterior",
+          "unit_heat_index": "Unidad de la sensación térmica por calor",
+          "unit_wind_chill": "Unidad de la sensación térmica por frío",
+          "unit_dew_point": "Unidad del punto de rocío",
+          "unit_atmospheric_pressure": "Unidad de la presión atmosférica",
+          "unit_current_rain_rate": "Unidad de la intensidad de lluvia actual",
+          "unit_rain_last_interval": "Unidad de la lluvia del último intervalo",
+          "unit_rain_last_hour": "Unidad de la lluvia de la última hora",
+          "unit_rain_today": "Unidad de la lluvia de hoy",
+          "unit_rain_last_24h": "Unidad de la lluvia de las últimas 24 horas",
+          "unit_rain_this_month": "Unidad de la lluvia de este mes",
+          "unit_rain_this_year": "Unidad de la lluvia de este año",
+          "unit_wind_speed": "Unidad de la velocidad del viento",
+          "unit_wind_gust": "Unidad de la racha de viento"
+        }
+      }
+    },
+    "error": {
+      "invalid_device_name": "Introduce un nombre de dispositivo.",
+      "invalid_topic_prefix": "Introduce un prefijo MQTT literal válido, sin comodines.",
+      "topic_prefix_in_use": "Otra estación ya utiliza este prefijo de tópicos."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery_ok": {
+        "name": "Batería correcta"
+      }
+    },
+    "sensor": {
+      "observation_datetime": {
+        "name": "Fecha y hora de observación"
+      },
+      "observation_time": {
+        "name": "Hora de observación"
+      },
+      "sunrise": {
+        "name": "Amanecer"
+      },
+      "sunset": {
+        "name": "Atardecer"
+      },
+      "cloud_base": {
+        "name": "Altura de la base de las nubes"
+      },
+      "forecast_icon_index": {
+        "name": "Índice del icono de previsión"
+      },
+      "outdoor_temperature": {
+        "name": "Temperatura exterior"
+      },
+      "heat_index": {
+        "name": "Sensación térmica por calor"
+      },
+      "wind_chill": {
+        "name": "Sensación térmica por frío"
+      },
+      "humidity": {
+        "name": "Humedad"
+      },
+      "dew_point": {
+        "name": "Punto de rocío"
+      },
+      "atmospheric_pressure": {
+        "name": "Presión atmosférica"
+      },
+      "current_rain_rate": {
+        "name": "Intensidad de lluvia actual"
+      },
+      "rain_last_interval": {
+        "name": "Lluvia del último intervalo"
+      },
+      "rain_last_hour": {
+        "name": "Lluvia de la última hora"
+      },
+      "rain_today": {
+        "name": "Lluvia de hoy"
+      },
+      "rain_last_24h": {
+        "name": "Lluvia de las últimas 24 horas"
+      },
+      "rain_this_month": {
+        "name": "Lluvia de este mes"
+      },
+      "rain_this_year": {
+        "name": "Lluvia de este año"
+      },
+      "wind_speed": {
+        "name": "Velocidad del viento"
+      },
+      "wind_gust": {
+        "name": "Racha de viento"
+      },
+      "wind_direction_degrees": {
+        "name": "Dirección del viento en grados"
+      },
+      "wind_direction": {
+        "name": "Dirección del viento"
+      }
+    }
+  }
+}
