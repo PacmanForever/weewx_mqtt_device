@@ -143,56 +143,6 @@ async def test_wind_speed_and_gust_share_station_unit(hass):
     assert runtime.values["wind_gust"] == 22
 
 
-@pytest.mark.asyncio
-async def test_derived_weather_binary_sensors_follow_station_values(hass):
-    """Derived binary sensors use configured units and add only once."""
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={CONF_DEVICE_NAME: "Weather", CONF_TOPIC_PREFIX: "weewx"},
-        options={"unit_temperature": "°F"},
-        unique_id="weather",
-    )
-    runtime = StationRuntime(hass, entry)
-    hass.data[DOMAIN] = {entry.entry_id: runtime}
-    binary_sensors = []
-    await binary_sensor_platform.async_setup_entry(
-        hass,
-        entry,
-        binary_sensors.extend,
-    )
-    assert binary_sensors == []
-
-    def publish(topic, payload):
-        runtime._message_received(
-            SimpleNamespace(topic=f"weewx/{topic}", payload=payload)
-        )
-
-    publish("outTemp_C", "0")
-    publish("humidex_C", "25")
-    publish("rainRate_cm_per_hour", "0")
-    publish("windSpeed_kph", "0")
-
-    sensors = {sensor._observation.key: sensor for sensor in binary_sensors}
-    assert set(sensors) == {"freezing", "raining", "windy", "humidex_high"}
-    assert sensors["freezing"].is_on is True
-    assert sensors["raining"].is_on is False
-    assert sensors["windy"].is_on is False
-    assert sensors["humidex_high"].is_on is False
-    assert all(sensor.available for sensor in sensors.values())
-
-    publish("outTemp_C", "1")
-    publish("humidex_C", "25.1")
-    publish("rainRate_cm_per_hour", "0.1")
-    publish("windSpeed_kph", "1")
-
-    assert sensors["freezing"].is_on is False
-    assert sensors["raining"].is_on is True
-    assert sensors["windy"].is_on is True
-    assert sensors["humidex_high"].is_on is True
-    assert len(binary_sensors) == 4
-    runtime.async_stop()
-
-
 def test_temperature_unit_change_converts_all_sensors_without_new_ids(hass):
     """Reloaded temperature sensors use the new unit and keep their identities."""
     entry = SimpleNamespace(
@@ -357,13 +307,10 @@ async def test_platform_setup_adds_entities_after_first_valid_value(hass):
     assert sensors[1].native_value == 250
     assert sensors[1].entity_description.suggested_display_precision == 0
 
-    assert {
-        sensor._observation.key: sensor.is_on for sensor in binary_sensors
-    } == {
-        "freezing": False,
-        "battery_ok": False,
-    }
-    assert all(sensor.available for sensor in binary_sensors)
+    assert len(binary_sensors) == 1
+    assert binary_sensors[0]._observation.key == "battery_ok"
+    assert binary_sensors[0].is_on is False
+    assert binary_sensors[0].available
 
 
 @pytest.mark.asyncio
@@ -529,10 +476,10 @@ async def test_setup_updates_registered_sensor_unit_without_creating_an_entity(
 
 
 @pytest.mark.asyncio
-async def test_setup_removes_unwanted_alarm_entities_from_registry(
+async def test_setup_removes_obsolete_binary_sensors_from_registry(
     hass, enable_custom_integrations
 ):
-    """Setup removes obsolete alarm entities but keeps other registry entries."""
+    """Setup removes obsolete binary sensors but keeps active registry entries."""
     entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_DEVICE_NAME: "Station", CONF_TOPIC_PREFIX: "weewx"},
@@ -553,6 +500,10 @@ async def test_setup_removes_unwanted_alarm_entities_from_registry(
         "soil_leaf_alarm_2",
         "soil_leaf_alarm_3",
         "soil_leaf_alarm_4",
+        "freezing",
+        "raining",
+        "windy",
+        "humidex_high",
     )
     for key in obsolete_keys:
         registry.async_get_or_create(

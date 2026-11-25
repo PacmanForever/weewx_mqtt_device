@@ -1,11 +1,11 @@
 # WeeWX MQTT Device
 
-> **BETA — v0.5.0:** This integration is in beta. Features and configuration may change; use it in production at your discretion and report issues through GitHub.
+> **BETA — v0.5.1:** This integration is in beta. Features and configuration may change; use it in production at your discretion and report issues through GitHub.
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPacmanForever%2Fweewx_mqtt_device%2Fmain%2Fcustom_components%2Fweewx_mqtt_device%2Fmanifest.json&query=%24.version&label=version)](https://github.com/PacmanForever/weewx_mqtt_device)
-[![Unit tests](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml/badge.svg?branch=main&job=unit)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml)
-[![Component tests](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml/badge.svg?branch=main&job=component)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml)
+[![Unit tests](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml/badge.svg?branch=main&job=unit&label=Unit%20tests)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml)
+[![Component tests](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml/badge.svg?branch=main&job=component&label=Component%20tests)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml)
 [![HACS validation](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/hacs.yml/badge.svg?branch=main)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/hacs.yml)
 [![Hassfest validation](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/hassfest.yml/badge.svg?branch=main)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/hassfest.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
@@ -55,7 +55,7 @@ An entity is added to Home Assistant only after its first valid MQTT value. A va
 
 The publisher can send these values only when the corresponding sensor, station, or WeeWX extension provides them. The integration does not fabricate values for missing fields.
 
-The integration also creates four binary sensors from the mapped measurements: **Glaçant** turns on at an outdoor temperature of 0 °C or lower, **Plovent** turns on when the current rain rate is above zero, **Ventant** turns on when wind speed is above zero, and **Xafogor** turns on when humidex is above 25 °C. Temperature thresholds are converted to the station's selected temperature unit. Each derived entity is added after its source value first arrives.
+Binary entities are limited to statuses published by WeeWX, such as battery and alarm states. The integration does not create calculated weather-condition binary sensors.
 
 | Parameter | Topic suffix | Entity value, units, and processing |
 | --- | --- | --- |
@@ -124,4 +124,4 @@ CI combines unit and component coverage and enforces a minimum of 95%.
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).
 
-**Release status: BETA — v0.5.0.**
+**Release status: BETA — v0.5.1.**

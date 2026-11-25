@@ -35,10 +35,6 @@ class StationRuntime:
         self._topic_observations: dict[str, list[Observation]] = defaultdict(list)
         self._entity_adders: dict[str, Callable[[Observation], None]] = {}
         self._added_entity_keys: set[str] = set()
-        self._dependent_entity_adders: dict[
-            str, tuple[tuple[str, ...], Callable[[], None]]
-        ] = {}
-        self._added_dependent_entity_keys: set[str] = set()
         settings = {**entry.data, **entry.options}
         self._settings = settings
         prefix = settings[CONF_TOPIC_PREFIX].strip("/")
@@ -58,17 +54,6 @@ class StationRuntime:
         for observation in OBSERVATIONS:
             if self._platform_for(observation) == platform:
                 self._add_entity_if_ready(observation)
-
-    @callback
-    def register_dependent_entity_adder(
-        self,
-        key: str,
-        observation_keys: tuple[str, ...],
-        add_entity: Callable[[], None],
-    ) -> None:
-        """Register an entity that becomes available after its source values arrive."""
-        self._dependent_entity_adders[key] = (observation_keys, add_entity)
-        self._add_dependent_entities_if_ready()
 
     async def async_start(self) -> None:
         """Subscribe once to each topic used by this station."""
@@ -101,7 +86,6 @@ class StationRuntime:
                 )
             else:
                 self._add_entity_if_ready(observation)
-                self._add_dependent_entities_if_ready()
         async_dispatcher_send(self.hass, self.signal)
 
     @staticmethod
@@ -124,20 +108,6 @@ class StationRuntime:
 
         add_entity(observation)
         self._added_entity_keys.add(observation.key)
-
-    @callback
-    def _add_dependent_entities_if_ready(self) -> None:
-        """Add each derived entity once all of its source values are available."""
-        for key, (observation_keys, add_entity) in (
-            self._dependent_entity_adders.items()
-        ):
-            if key in self._added_dependent_entity_keys or any(
-                self.values.get(observation_key) is None
-                for observation_key in observation_keys
-            ):
-                continue
-            add_entity()
-            self._added_dependent_entity_keys.add(key)
 
     def async_stop(self) -> None:
         """Unsubscribe from all topics owned by this station."""

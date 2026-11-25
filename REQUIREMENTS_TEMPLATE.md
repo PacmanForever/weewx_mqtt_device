@@ -6,7 +6,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 
 - **Display name**: WeeWX MQTT Device
 - **Domain**: `weewx_mqtt_device`
-- **Version**: `0.5.0` (GitHub tag/release `v0.5.0`)
+- **Version**: `0.5.1` (GitHub tag/release `v0.5.1`)
 - **Minimum supported Home Assistant version**: [TODO]
 - **Maintainers/code owners**: `@PacmanForever`
 
@@ -38,6 +38,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 - Consume the MQTT messages that WeeWX already publishes.
 - Let the user create, view, update, and delete configurations for multiple WeeWX instances.
 - Create one weather-station device for each configured WeeWX instance. Each device listens to that instance's configured MQTT topics and exposes its mapped observations as Home Assistant entities.
+- Expose only mapped WeeWX observations and binary statuses; do not create synthetic weather-condition entities such as freezing, raining, windy, or high humidex.
 - Keep each instance's topic mappings and entities isolated from those of other configured instances.
 - Do not require installing an extension in WeeWX, changing its existing publisher, or rebuilding its Docker image.
 

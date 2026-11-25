@@ -23,6 +23,10 @@ _OBSOLETE_BINARY_SENSOR_KEYS = (
     "soil_leaf_alarm_2",
     "soil_leaf_alarm_3",
     "soil_leaf_alarm_4",
+    "freezing",
+    "raining",
+    "windy",
+    "humidex_high",
 )
 
 
