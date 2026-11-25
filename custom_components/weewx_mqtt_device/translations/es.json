@@ -91,7 +91,7 @@
         "name": "Sensación térmica por frío"
       },
       "humidity": {
-        "name": "Humedad"
+        "name": "Humedad exterior"
       },
       "dew_point": {
         "name": "Punto de rocío"

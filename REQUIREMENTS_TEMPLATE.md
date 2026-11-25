@@ -6,7 +6,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 
 - **Display name**: WeeWX MQTT Device
 - **Domain**: `weewx_mqtt_device`
-- **Version**: `0.4.0` (GitHub tag/release `v0.4`)
+- **Version**: `0.4.1` (GitHub tag/release `v0.4.1`)
 - **Minimum supported Home Assistant version**: [TODO]
 - **Maintainers/code owners**: `@PacmanForever`
 
@@ -70,7 +70,7 @@ Use the following mapping as the initial configuration for each station. Topic s
 | Outdoor temperature | `weewx/outTemp_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
 | Heat index | `weewx/heatindex_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
 | Wind chill | `weewx/windchill_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
-| Humidity | `weewx/outHumidity` | Percent (`%`); round to 0 decimal places. |
+| Outdoor humidity | `weewx/outHumidity` | Percent (`%`); round to 0 decimal places. |
 | Dew point | `weewx/dewpoint_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
 | Atmospheric pressure | `weewx/barometer_mbar` | Source mbar; default to hPa in metric or inHg in US customary; round to 0 decimal places. |
 | Current rain rate | `weewx/rainRate_cm_per_hour` | Source cm/h; default to mm/h in metric or in/h in US customary; round to 1 decimal place. |

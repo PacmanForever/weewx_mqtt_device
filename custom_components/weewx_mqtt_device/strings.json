@@ -91,7 +91,7 @@
         "name": "Wind chill"
       },
       "humidity": {
-        "name": "Humidity"
+        "name": "Outdoor humidity"
       },
       "dew_point": {
         "name": "Dew point"

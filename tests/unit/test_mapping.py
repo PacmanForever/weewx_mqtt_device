@@ -148,6 +148,9 @@ class MappingTests(unittest.TestCase):
             decode_payload("75.6", observation("humidity")),
             76,
         )
+        unit_system_code = decode_payload("16.0", observation("unit_system_code"))
+        self.assertEqual(unit_system_code, 16)
+        self.assertIsInstance(unit_system_code, int)
         self.assertEqual(
             decode_payload("12.345", observation("apparent_temperature"), "°F"),
             54.2,

@@ -30,7 +30,7 @@ class StationRuntime:
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
-        self.values: dict[str, str | float | bool | None] = {}
+        self.values: dict[str, str | int | float | bool | None] = {}
         self._unsubscribers: list[Callable[[], None]] = []
         self._topic_observations: dict[str, list[Observation]] = defaultdict(list)
         self._entity_adders: dict[str, Callable[[Observation], None]] = {}

@@ -91,7 +91,7 @@
         "name": "Temperatura de fredor"
       },
       "humidity": {
-        "name": "Humitat"
+        "name": "Humitat exterior"
       },
       "dew_point": {
         "name": "Punt de rosada"

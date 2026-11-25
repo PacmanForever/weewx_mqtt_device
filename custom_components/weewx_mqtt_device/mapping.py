@@ -108,7 +108,7 @@ def decode_payload(
     observation: Observation,
     unit: str | None = None,
     language: str = "en",
-) -> str | float | bool | None:
+) -> str | int | float | bool | None:
     """Decode one payload using its observation mapping."""
     if observation.kind == "binary":
         value = _number(payload)
@@ -128,6 +128,8 @@ def decode_payload(
         return _wind_direction(value, language)
 
     value = _convert_units(value, observation, unit)
+    if observation.precision == 0:
+        return int(round(value))
     if observation.precision is not None:
         value = round(value, observation.precision)
     return value

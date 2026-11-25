@@ -85,10 +85,10 @@ class WeeWxSensor(SensorEntity):
         self._attr_force_update = observation.key == "rain_last_interval"
 
     @property
-    def native_value(self) -> str | float | None:
+    def native_value(self) -> str | int | float | None:
         """Return the latest decoded value."""
         value = self._runtime.values.get(self._observation.key)
-        return value if isinstance(value, (str, float)) else None
+        return value if isinstance(value, (str, int, float)) else None
 
     @property
     def available(self) -> bool:
