@@ -149,6 +149,7 @@ def test_entities_use_station_device_metadata_and_force_rain_updates(hass):
 
     battery = next(item for item in OBSERVATIONS if item.kind == "binary")
     binary_sensor = WeeWxBinarySensor(runtime, entry, battery, settings)
+    assert binary_sensor.entity_description.device_class.value == "battery"
     assert not binary_sensor.available
     runtime.values["battery_ok"] = False
     assert binary_sensor.available
@@ -177,6 +178,20 @@ async def test_platform_setup_creates_each_mapped_entity(hass):
 
     assert len(sensors) == len(OBSERVATIONS) - 1
     assert len(binary_sensors) == 1
+    for sensor in sensors:
+        if sensor._observation.precision is not None:
+            assert (
+                sensor.entity_description.suggested_display_precision
+                == sensor._observation.precision
+            )
+
+    pressure = next(
+        sensor
+        for sensor in sensors
+        if sensor._observation.key == "atmospheric_pressure"
+    )
+    assert pressure.entity_description.suggested_display_precision == 0
+
     temperature = next(
         sensor
         for sensor in sensors

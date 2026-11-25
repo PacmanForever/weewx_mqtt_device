@@ -60,7 +60,7 @@ Use the following mapping as the initial configuration for each station. Topic s
 
 | Observation | WeeWX topic | Initial output and processing |
 | --- | --- | --- |
-| Battery OK | `weewx/txBatteryStatus` | Binary sensor; payload `0.0` means off/not OK. |
+| Battery OK | `weewx/txBatteryStatus` | Binary sensor with Home Assistant battery device class; payload `0.0` means off/not OK. |
 | Observation date and time | `weewx/dateTime` | Unix timestamp; local date/time as `DD/MM/YY HH:MM:SS`. |
 | Observation time | `weewx/dateTime` | Unix timestamp; local time as `HH:MM:SS`. |
 | Sunrise | `weewx/sunrise` | Unix timestamp; local time as `HH:MM`. |

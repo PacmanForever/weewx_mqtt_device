@@ -6,6 +6,7 @@ from typing import Any
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
+    BinarySensorDeviceClass,
     BinarySensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
@@ -56,6 +57,7 @@ class WeeWxBinarySensor(BinarySensorEntity):
         self.entity_description = BinarySensorEntityDescription(
             key=observation.key,
             translation_key=observation.key,
+            device_class=BinarySensorDeviceClass.BATTERY,
         )
         self._runtime = runtime
         self._observation = observation

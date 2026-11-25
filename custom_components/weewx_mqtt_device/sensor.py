@@ -69,6 +69,7 @@ class WeeWxSensor(SensorEntity):
                 else None
             ),
             native_unit_of_measurement=unit,
+            suggested_display_precision=observation.precision,
             state_class=(
                 SensorStateClass.MEASUREMENT
                 if observation.device_class
