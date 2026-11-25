@@ -1,5 +1,7 @@
 # WeeWX MQTT Device
 
+> **BETA — v0.1:** This integration is in beta. Features and configuration may change; use it in production at your discretion and report issues through GitHub.
+
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPacmanForever%2Fweewx_mqtt_device%2Fmain%2Fcustom_components%2Fweewx_mqtt_device%2Fmanifest.json&query=%24.version&label=version)](https://github.com/PacmanForever/weewx_mqtt_device)
 [![Unit tests](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml/badge.svg?branch=main&job=unit)](https://github.com/PacmanForever/weewx_mqtt_device/actions/workflows/tests.yml)
@@ -77,4 +79,4 @@ CI combines unit and component coverage and enforces a minimum of 95%.
 
 GNU General Public License v3.0. See [LICENSE](LICENSE).
 
-**Release status:** Not released yet.
+**Release status: BETA — v0.1.**
