@@ -6,7 +6,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 
 - **Display name**: WeeWX MQTT Device
 - **Domain**: `weewx_mqtt_device`
-- **Version**: `0.1.0`
+- **Version**: `0.2.0` (GitHub tag/release `v0.2`)
 - **Minimum supported Home Assistant version**: [TODO]
 - **Maintainers/code owners**: `@PacmanForever`
 
@@ -116,9 +116,9 @@ For the 16-point wind direction, use the mapping's sector boundaries after round
 
 ## Release and maintenance
 
-- **Versioning policy**: [TODO]
-- **Release notes/changelog format**: [TODO]
-- **Git tag and GitHub release convention**: Keep each release aligned with the version in `manifest.json`.
+- **Versioning policy**: Semantic versioning in `manifest.json`; use `vMAJOR.MINOR` Git tags and GitHub releases for `.0` releases (for example, manifest `0.2.0` maps to tag `v0.2`).
+- **Release notes/changelog format**: Summarize user-facing features, fixes, and compatibility notes in each GitHub release.
+- **Git tag and GitHub release convention**: Keep each release aligned with the version in `manifest.json`; never move an existing published version tag.
 - **Compatibility and dependency review cadence**: [TODO]
 
 ---
