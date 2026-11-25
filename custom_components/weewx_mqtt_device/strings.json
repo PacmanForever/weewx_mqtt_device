@@ -3,10 +3,16 @@
     "step": {
       "user": {
         "title": "Add a WeeWX station",
-        "description": "Home Assistant's MQTT integration must be configured first. Add one entry for each station.",
+        "description": "Home Assistant's MQTT integration must be configured first. Add one entry for each station and choose one unit per measurement type; wind speed and gust share a unit.",
         "data": {
           "device_name": "Station device name",
-          "topic_prefix": "MQTT topic prefix"
+          "topic_prefix": "MQTT topic prefix",
+          "unit_temperature": "Temperature unit",
+          "unit_distance": "Cloud base unit",
+          "unit_pressure": "Atmospheric pressure unit",
+          "unit_rain": "Accumulated rain unit",
+          "unit_rain_rate": "Rain rate unit",
+          "unit_wind_speed": "Wind speed and gust unit"
         }
       }
     },
@@ -24,21 +30,12 @@
         "data": {
           "device_name": "Station device name",
           "topic_prefix": "MQTT topic prefix",
-          "unit_cloud_base": "Cloud base unit",
-          "unit_outdoor_temperature": "Outdoor temperature unit",
-          "unit_heat_index": "Heat index unit",
-          "unit_wind_chill": "Wind chill unit",
-          "unit_dew_point": "Dew point unit",
-          "unit_atmospheric_pressure": "Atmospheric pressure unit",
-          "unit_current_rain_rate": "Current rain rate unit",
-          "unit_rain_last_interval": "Last interval rain unit",
-          "unit_rain_last_hour": "Last hour rain unit",
-          "unit_rain_today": "Today's rain unit",
-          "unit_rain_last_24h": "Last 24 hours rain unit",
-          "unit_rain_this_month": "This month's rain unit",
-          "unit_rain_this_year": "This year's rain unit",
-          "unit_wind_speed": "Wind speed unit",
-          "unit_wind_gust": "Wind gust unit"
+          "unit_temperature": "Temperature unit",
+          "unit_distance": "Cloud base unit",
+          "unit_pressure": "Atmospheric pressure unit",
+          "unit_rain": "Accumulated rain unit",
+          "unit_rain_rate": "Rain rate unit",
+          "unit_wind_speed": "Wind speed and gust unit"
         }
       }
     },

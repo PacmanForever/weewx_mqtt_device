@@ -41,8 +41,9 @@ WeeWX must already publish the mapped observations to that broker. No WeeWX exte
 1. Configure Home Assistant's MQTT integration and verify that it can connect to the WeeWX broker.
 2. Add **WeeWX MQTT Device** from **Settings → Devices & services → Add integration**.
 3. Enter a device name and the station's MQTT topic prefix. The default is `weewx`.
-4. Add another integration entry for each additional WeeWX station, using a distinct topic prefix.
-5. In a station's options, choose its output unit for each measurement. Values are converted from the source units in the mapping.
+4. Choose one output unit per measurement type during setup. Wind speed and gust share one unit; accumulated rain values also share one unit. Rain rate has a separate unit.
+5. Add another integration entry for each additional WeeWX station, using a distinct topic prefix.
+6. Adjust the device name, topic prefix, or unit selections later from the station's options. Values are converted from the source units in the mapping.
 
 The supplied mapping's suffixes are used beneath the prefix. For example, prefix `weewx/home` subscribes to `weewx/home/outTemp_C`. The prefix and unit selections are independent for each station. Home Assistant's integration controls can be used to edit or remove a station.
 

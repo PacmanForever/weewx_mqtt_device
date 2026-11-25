@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 DOMAIN = "weewx_mqtt_device"
@@ -23,6 +24,18 @@ class Observation:
     default_unit: str | None = None
     precision: int | None = None
     device_class: str | None = None
+
+
+def observation_unit(
+    settings: Mapping[str, str], observation: Observation
+) -> str | None:
+    """Return a shared unit setting, with support for older per-observation options."""
+    if observation.unit_type is None:
+        return observation.default_unit
+    return settings.get(
+        f"unit_{observation.unit_type}",
+        settings.get(f"unit_{observation.key}", observation.default_unit),
+    )
 
 
 OBSERVATIONS = (

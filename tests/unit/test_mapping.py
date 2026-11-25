@@ -6,7 +6,10 @@ import unittest
 
 import pytest
 
-from custom_components.weewx_mqtt_device.const import OBSERVATIONS
+from custom_components.weewx_mqtt_device.const import (
+    OBSERVATIONS,
+    observation_unit,
+)
 from custom_components.weewx_mqtt_device.mapping import decode_payload
 import custom_components.weewx_mqtt_device.mapping as mapping
 
@@ -25,6 +28,25 @@ class MappingTests(unittest.TestCase):
             "outTemp_C",
         )
         self.assertEqual(observation("wind_direction").suffix, "windDir")
+
+    def test_unit_settings_are_shared_by_type_and_keep_legacy_options(self):
+        wind_speed = observation("wind_speed")
+        wind_gust = observation("wind_gust")
+        outdoor_temperature = observation("outdoor_temperature")
+
+        self.assertEqual(
+            observation_unit({"unit_wind_speed": "mph"}, wind_speed),
+            "mph",
+        )
+        self.assertEqual(
+            observation_unit({"unit_wind_speed": "mph"}, wind_gust),
+            "mph",
+        )
+        self.assertEqual(
+            observation_unit({"unit_outdoor_temperature": "°F"}, outdoor_temperature),
+            "°F",
+        )
+        self.assertEqual(observation_unit({}, outdoor_temperature), "°C")
 
     def test_temperature_and_distance_conversions(self):
         self.assertEqual(

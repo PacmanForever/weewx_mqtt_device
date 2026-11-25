@@ -3,10 +3,16 @@
     "step": {
       "user": {
         "title": "Añadir una estación WeeWX",
-        "description": "Primero hay que configurar la integración MQTT de Home Assistant. Añade una entrada por estación.",
+        "description": "Primero hay que configurar la integración MQTT de Home Assistant. Añade una entrada por estación y elige una unidad por tipo de medición; la velocidad y las rachas de viento comparten unidad.",
         "data": {
           "device_name": "Nombre del dispositivo de la estación",
-          "topic_prefix": "Prefijo de los tópicos MQTT"
+          "topic_prefix": "Prefijo de los tópicos MQTT",
+          "unit_temperature": "Unidad de temperatura",
+          "unit_distance": "Unidad de la base de las nubes",
+          "unit_pressure": "Unidad de presión atmosférica",
+          "unit_rain": "Unidad de lluvia acumulada",
+          "unit_rain_rate": "Unidad de intensidad de lluvia",
+          "unit_wind_speed": "Unidad de velocidad y rachas de viento"
         }
       }
     },
@@ -20,25 +26,16 @@
     "step": {
       "init": {
         "title": "Configuración de la estación",
-        "description": "Elige la unidad de cada medición. Los valores se convierten desde las unidades del mapping de WeeWX.",
+        "description": "Elige una unidad por tipo de medición. La velocidad y las rachas de viento comparten unidad. Los valores se convierten desde las unidades del mapping de WeeWX.",
         "data": {
           "device_name": "Nombre del dispositivo de la estación",
           "topic_prefix": "Prefijo de los tópicos MQTT",
-          "unit_cloud_base": "Unidad de la base de las nubes",
-          "unit_outdoor_temperature": "Unidad de la temperatura exterior",
-          "unit_heat_index": "Unidad de la sensación térmica por calor",
-          "unit_wind_chill": "Unidad de la sensación térmica por frío",
-          "unit_dew_point": "Unidad del punto de rocío",
-          "unit_atmospheric_pressure": "Unidad de la presión atmosférica",
-          "unit_current_rain_rate": "Unidad de la intensidad de lluvia actual",
-          "unit_rain_last_interval": "Unidad de la lluvia del último intervalo",
-          "unit_rain_last_hour": "Unidad de la lluvia de la última hora",
-          "unit_rain_today": "Unidad de la lluvia de hoy",
-          "unit_rain_last_24h": "Unidad de la lluvia de las últimas 24 horas",
-          "unit_rain_this_month": "Unidad de la lluvia de este mes",
-          "unit_rain_this_year": "Unidad de la lluvia de este año",
-          "unit_wind_speed": "Unidad de la velocidad del viento",
-          "unit_wind_gust": "Unidad de la racha de viento"
+          "unit_temperature": "Unidad de temperatura",
+          "unit_distance": "Unidad de la base de las nubes",
+          "unit_pressure": "Unidad de presión atmosférica",
+          "unit_rain": "Unidad de lluvia acumulada",
+          "unit_rain_rate": "Unidad de intensidad de lluvia",
+          "unit_wind_speed": "Unidad de velocidad y rachas de viento"
         }
       }
     },

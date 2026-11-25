@@ -49,7 +49,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 - **Per-instance topic discovery vs. manual topic mapping**: Use the supplied fixed observation mapping with a configurable topic prefix per station. The default prefix is `weewx`.
 - **Payload structure and parsing**: Parse the mapping's numeric payloads as numbers and its timestamp payloads as Unix timestamps. Malformed values become unavailable and are logged.
 - **Topic mapping source**: The user will provide the current WeeWX MQTT topics and their weather-observation mappings in Catalan; use that mapping as the initial topic/observation mapping.
-- **Weather observations and units**: WeeWX payloads do not include units. Each configured station can select an output unit for each unit-bearing observation. Initialize units from the supplied mapping and convert from the source units before publishing entity states.
+- **Weather observations and units**: WeeWX payloads do not include units. Ask for output units during initial station setup and allow changing them later. Select one unit per physical measurement type, shared by all observations of that type (for example, wind speed and gust); rain rate has its own unit type. Initialize units from the supplied mapping and convert from the source units before publishing entity states.
 - **Configurable entity metadata**: Device name is selected by the user; model is `Weewx MQTT`; manufacturer is `@pacmanforever`.
 - **Update, availability, and stale-data behavior**: Entities begin unavailable until their topic publishes a value. Accept updates as they arrive. Preserve repeated updates for rain in the last interval.
 - **Connection and malformed-message error handling**: Depend on Home Assistant's MQTT integration for broker status; log malformed payloads and mark the affected entity unavailable.
@@ -89,8 +89,8 @@ For the 16-point wind direction, use the mapping's sector boundaries after round
 
 ### Home Assistant configuration and entities
 
-- **Configuration method and lifecycle**: Use Home Assistant config entries. Each entry creates one station/device; users can add multiple entries, edit an entry through its options, and remove it through Home Assistant's integration controls.
-- **Per-instance settings**: Store a user-selected device name, topic prefix, and units for all unit-bearing observations per station. Map suffixes from the supplied `weewx/...` mapping under that prefix.
+- **Configuration method and lifecycle**: Use Home Assistant config entries. Each initial setup asks for station identity, topic prefix, and units. Each entry creates one station/device; users can add multiple entries, edit an entry through its options, and remove it through Home Assistant's integration controls.
+- **Per-instance settings**: Store a user-selected device name, topic prefix, and one unit per measurement type per station. Observations sharing a type use the same selected unit. Map suffixes from the supplied `weewx/...` mapping under that prefix.
 - **Exact sensors, platforms, units, device classes, and entity names**: Implement the complete initial observation mapping above, with translated names. The topic prefix and output units are per station; rounding and conversions follow the mapping table.
 - **Weather-station device identity and metadata**: The user chooses each device's display name; model is `Weewx MQTT`; manufacturer is `@pacmanforever`; identifiers use the Home Assistant config-entry unique ID and remain stable across option changes.
 - **Supported languages**: Catalan, Spanish, and English.

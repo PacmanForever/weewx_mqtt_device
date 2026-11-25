@@ -12,7 +12,19 @@ from custom_components.weewx_mqtt_device.const import (
     CONF_TOPIC_PREFIX,
     DOMAIN,
     OBSERVATIONS,
+    UNIT_CHOICES,
 )
+
+def _default_units() -> dict[str, str]:
+    """Return one default unit for each measurement type."""
+    return {
+        f"unit_{unit_type}": next(
+            item.default_unit
+            for item in OBSERVATIONS
+            if item.unit_type == unit_type
+        )
+        for unit_type in UNIT_CHOICES
+    }
 
 
 @pytest.mark.asyncio
@@ -26,20 +38,28 @@ async def test_config_flow_creates_station_with_normalized_prefix(
     )
     assert result["type"] is FlowResultType.FORM
 
+    user_input = {
+        CONF_DEVICE_NAME: "Home station",
+        CONF_TOPIC_PREFIX: "/weewx/home/",
+        **_default_units(),
+        "unit_temperature": "°F",
+        "unit_wind_speed": "mph",
+    }
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        {
-            CONF_DEVICE_NAME: "Home station",
-            CONF_TOPIC_PREFIX: "/weewx/home/",
-        },
+        user_input,
     )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Home station"
-    assert result["data"] == {
-        CONF_DEVICE_NAME: "Home station",
-        CONF_TOPIC_PREFIX: "weewx/home",
-    }
+    assert result["data"][CONF_DEVICE_NAME] == "Home station"
+    assert result["data"][CONF_TOPIC_PREFIX] == "weewx/home"
+    assert result["data"]["unit_temperature"] == "°F"
+    assert result["data"]["unit_wind_speed"] == "mph"
+    assert len([key for key in result["data"] if key.startswith("unit_")]) == len(
+        UNIT_CHOICES
+    )
+    assert "unit_wind_gust" not in result["data"]
 
 
 @pytest.mark.asyncio
@@ -53,7 +73,11 @@ async def test_config_flow_rejects_empty_name_and_wildcard_prefix(
     )
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        {CONF_DEVICE_NAME: "  ", CONF_TOPIC_PREFIX: "weewx/#"},
+        {
+            CONF_DEVICE_NAME: "  ",
+            CONF_TOPIC_PREFIX: "weewx/#",
+            **_default_units(),
+        },
     )
 
     assert result["type"] is FlowResultType.FORM
@@ -83,7 +107,11 @@ async def test_config_flow_prevents_duplicate_topic_prefixes(
     )
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        {CONF_DEVICE_NAME: "Two", CONF_TOPIC_PREFIX: "weewx"},
+        {
+            CONF_DEVICE_NAME: "Two",
+            CONF_TOPIC_PREFIX: "weewx",
+            **_default_units(),
+        },
     )
 
     assert result["type"] is FlowResultType.FORM
@@ -108,11 +136,10 @@ async def test_options_flow_saves_station_settings_and_units(
     user_input = {
         CONF_DEVICE_NAME: "Home weather",
         CONF_TOPIC_PREFIX: "weewx/home",
+        **_default_units(),
     }
-    for observation in OBSERVATIONS:
-        if observation.unit_type:
-            user_input[f"unit_{observation.key}"] = observation.default_unit
-    user_input["unit_outdoor_temperature"] = "°F"
+    user_input["unit_temperature"] = "°F"
+    user_input["unit_wind_speed"] = "mph"
 
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
@@ -123,7 +150,9 @@ async def test_options_flow_saves_station_settings_and_units(
     assert entry.title == "Home weather"
     assert entry.options[CONF_DEVICE_NAME] == "Home weather"
     assert entry.options[CONF_TOPIC_PREFIX] == "weewx/home"
-    assert entry.options["unit_outdoor_temperature"] == "°F"
+    assert entry.options["unit_temperature"] == "°F"
+    assert entry.options["unit_wind_speed"] == "mph"
+    assert "unit_wind_gust" not in entry.options
 
 
 @pytest.mark.asyncio
@@ -150,10 +179,8 @@ async def test_options_flow_rejects_prefix_used_by_another_station(
     user_input = {
         CONF_DEVICE_NAME: "First",
         CONF_TOPIC_PREFIX: "weewx/second",
+        **_default_units(),
     }
-    for observation in OBSERVATIONS:
-        if observation.unit_type:
-            user_input[f"unit_{observation.key}"] = observation.default_unit
 
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
@@ -181,10 +208,8 @@ async def test_options_flow_rejects_wildcard_topic_prefix(
     user_input = {
         CONF_DEVICE_NAME: "Station",
         CONF_TOPIC_PREFIX: "weewx/+",
+        **_default_units(),
     }
-    for observation in OBSERVATIONS:
-        if observation.unit_type:
-            user_input[f"unit_{observation.key}"] = observation.default_unit
 
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
@@ -212,10 +237,8 @@ async def test_options_flow_rejects_empty_device_name(
     user_input = {
         CONF_DEVICE_NAME: " ",
         CONF_TOPIC_PREFIX: "weewx",
+        **_default_units(),
     }
-    for observation in OBSERVATIONS:
-        if observation.unit_type:
-            user_input[f"unit_{observation.key}"] = observation.default_unit
 
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],

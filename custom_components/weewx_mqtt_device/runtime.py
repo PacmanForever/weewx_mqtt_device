@@ -12,7 +12,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .const import CONF_TOPIC_PREFIX, DOMAIN, OBSERVATIONS, Observation
+from .const import (
+    CONF_TOPIC_PREFIX,
+    DOMAIN,
+    OBSERVATIONS,
+    Observation,
+    observation_unit,
+)
 from .mapping import decode_payload
 
 _LOGGER = logging.getLogger(__name__)
@@ -50,10 +56,7 @@ class StationRuntime:
     def _message_received(self, message: ReceiveMessage) -> None:
         """Decode a message and notify entities belonging to this station."""
         for observation in self._topic_observations[message.topic]:
-            unit = self._settings.get(
-                f"unit_{observation.key}",
-                observation.default_unit,
-            )
+            unit = observation_unit(self._settings, observation)
             try:
                 self.values[observation.key] = decode_payload(
                     message.payload,

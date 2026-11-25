@@ -17,6 +17,7 @@ from .const import (
     DOMAIN,
     OBSERVATIONS,
     UNIT_CHOICES,
+    observation_unit,
 )
 
 
@@ -47,15 +48,16 @@ def _prefix_in_use(
 
 
 def _unit_schema(settings: dict[str, Any]) -> dict[vol.Marker, Any]:
-    """Build per-observation output-unit selectors."""
+    """Build one output-unit selector per physical measurement type."""
     schema: dict[vol.Marker, Any] = {}
-    for observation in OBSERVATIONS:
-        if observation.unit_type is None:
-            continue
-        key = f"unit_{observation.key}"
-        default = settings.get(key, observation.default_unit)
+    for unit_type, choices in UNIT_CHOICES.items():
+        observation = next(
+            item for item in OBSERVATIONS if item.unit_type == unit_type
+        )
+        key = f"unit_{unit_type}"
+        default = observation_unit(settings, observation)
         schema[vol.Required(key, default=default)] = vol.In(
-            UNIT_CHOICES[observation.unit_type]
+            choices
         )
     return schema
 
@@ -83,25 +85,32 @@ class WeeWxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors[CONF_TOPIC_PREFIX] = "topic_prefix_in_use"
                 if not errors:
                     await self.async_set_unique_id(uuid4().hex)
+                    data = {
+                        CONF_DEVICE_NAME: name,
+                        CONF_TOPIC_PREFIX: prefix,
+                    }
+                    data.update(
+                        {
+                            f"unit_{unit_type}": user_input[f"unit_{unit_type}"]
+                            for unit_type in UNIT_CHOICES
+                        }
+                    )
                     return self.async_create_entry(
                         title=name,
-                        data={
-                            CONF_DEVICE_NAME: name,
-                            CONF_TOPIC_PREFIX: prefix,
-                        },
+                        data=data,
                     )
 
+        schema: dict[vol.Marker, Any] = {
+            vol.Required(CONF_DEVICE_NAME): str,
+            vol.Required(
+                CONF_TOPIC_PREFIX,
+                default=DEFAULT_TOPIC_PREFIX,
+            ): str,
+        }
+        schema.update(_unit_schema({}))
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_DEVICE_NAME): str,
-                    vol.Required(
-                        CONF_TOPIC_PREFIX,
-                        default=DEFAULT_TOPIC_PREFIX,
-                    ): str,
-                }
-            ),
+            data_schema=vol.Schema(schema),
             errors=errors,
         )
 

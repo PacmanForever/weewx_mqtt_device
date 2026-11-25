@@ -3,10 +3,16 @@
     "step": {
       "user": {
         "title": "Afegeix una estació WeeWX",
-        "description": "Primer cal configurar la integració MQTT de Home Assistant. Afegeix una entrada per a cada estació.",
+        "description": "Primer cal configurar la integració MQTT de Home Assistant. Afegeix una entrada per a cada estació i tria una unitat per tipus de mesura; la velocitat i els cops de vent comparteixen unitat.",
         "data": {
           "device_name": "Nom del dispositiu de l'estació",
-          "topic_prefix": "Prefix dels tòpics MQTT"
+          "topic_prefix": "Prefix dels tòpics MQTT",
+          "unit_temperature": "Unitat de temperatura",
+          "unit_distance": "Unitat de la base dels núvols",
+          "unit_pressure": "Unitat de pressió atmosfèrica",
+          "unit_rain": "Unitat de pluja acumulada",
+          "unit_rain_rate": "Unitat de la intensitat de pluja",
+          "unit_wind_speed": "Unitat de velocitat i cops de vent"
         }
       }
     },
@@ -20,25 +26,16 @@
     "step": {
       "init": {
         "title": "Configuració de l'estació",
-        "description": "Tria la unitat de cada mesura. Els valors es converteixen des de les unitats del mapping WeeWX.",
+        "description": "Tria una unitat per tipus de mesura. La velocitat i els cops de vent comparteixen unitat. Els valors es converteixen des de les unitats del mapping WeeWX.",
         "data": {
           "device_name": "Nom del dispositiu de l'estació",
           "topic_prefix": "Prefix dels tòpics MQTT",
-          "unit_cloud_base": "Unitat de la base dels núvols",
-          "unit_outdoor_temperature": "Unitat de la temperatura exterior",
-          "unit_heat_index": "Unitat de la xafogor",
-          "unit_wind_chill": "Unitat de la sensació de fred",
-          "unit_dew_point": "Unitat del punt de rosada",
-          "unit_atmospheric_pressure": "Unitat de la pressió atmosfèrica",
-          "unit_current_rain_rate": "Unitat de la intensitat de pluja actual",
-          "unit_rain_last_interval": "Unitat de la pluja de l'últim interval",
-          "unit_rain_last_hour": "Unitat de la pluja de l'última hora",
-          "unit_rain_today": "Unitat de la pluja d'avui",
-          "unit_rain_last_24h": "Unitat de la pluja de les últimes 24 hores",
-          "unit_rain_this_month": "Unitat de la pluja d'aquest mes",
-          "unit_rain_this_year": "Unitat de la pluja d'aquest any",
-          "unit_wind_speed": "Unitat de la velocitat del vent",
-          "unit_wind_gust": "Unitat del cop de vent"
+          "unit_temperature": "Unitat de temperatura",
+          "unit_distance": "Unitat de la base dels núvols",
+          "unit_pressure": "Unitat de pressió atmosfèrica",
+          "unit_rain": "Unitat de pluja acumulada",
+          "unit_rain_rate": "Unitat de la intensitat de pluja",
+          "unit_wind_speed": "Unitat de velocitat i cops de vent"
         }
       }
     },

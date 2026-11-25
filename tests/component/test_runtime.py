@@ -116,6 +116,31 @@ async def test_station_runtimes_keep_values_isolated(hass):
 
 
 @pytest.mark.asyncio
+async def test_wind_speed_and_gust_share_station_unit(hass):
+    """One wind-speed preference applies to both speed and gust sensors."""
+    entry = SimpleNamespace(
+        entry_id="wind",
+        unique_id="wind",
+        data={
+            CONF_DEVICE_NAME: "Wind station",
+            CONF_TOPIC_PREFIX: "weewx",
+        },
+        options={"unit_wind_speed": "mph"},
+    )
+    runtime = StationRuntime(hass, entry)
+
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/windSpeed_kph", payload="36")
+    )
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/windGust_kph", payload="36")
+    )
+
+    assert runtime.values["wind_speed"] == 22
+    assert runtime.values["wind_gust"] == 22
+
+
+@pytest.mark.asyncio
 async def test_runtime_logs_malformed_payload_and_marks_value_unavailable(
     hass, caplog
 ):

@@ -23,6 +23,7 @@ from .const import (
     MODEL,
     OBSERVATIONS,
     Observation,
+    observation_unit,
 )
 from .runtime import StationRuntime
 
@@ -56,10 +57,7 @@ class WeeWxSensor(SensorEntity):
         observation: Observation,
         settings: dict[str, Any],
     ) -> None:
-        unit = settings.get(
-            f"unit_{observation.key}",
-            observation.default_unit,
-        )
+        unit = observation_unit(settings, observation)
         description = SensorEntityDescription(
             key=observation.key,
             translation_key=observation.key,
