@@ -60,6 +60,18 @@
       },
       "outside_alarm_2": {
         "name": "Outdoor alarm 2"
+      },
+      "freezing": {
+        "name": "Freezing"
+      },
+      "raining": {
+        "name": "Raining"
+      },
+      "windy": {
+        "name": "Wind"
+      },
+      "humidex_high": {
+        "name": "Humidex discomfort"
       }
     },
     "sensor": {

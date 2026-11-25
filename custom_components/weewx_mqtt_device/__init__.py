@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
-from .const import DOMAIN
+from .const import DOMAIN, OBSERVATIONS, observation_unit
 from .runtime import StationRuntime
 
 PLATFORMS = ("binary_sensor", "sensor")
@@ -29,6 +29,7 @@ _OBSOLETE_BINARY_SENSOR_KEYS = (
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up a WeeWX station config entry."""
     registry = er.async_get(hass)
+    _update_configured_sensor_units(hass, entry)
     obsolete_unique_ids = {
         f"{entry.unique_id}_{key}" for key in _OBSOLETE_BINARY_SENSOR_KEYS
     }
@@ -47,6 +48,43 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.async_on_unload(entry.add_update_listener(_async_reload_entry))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
+
+def _update_configured_sensor_units(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> None:
+    """Keep registered sensor units aligned with this station's preferences."""
+    settings = {**entry.data, **entry.options}
+    units_by_unique_id = {
+        f"{entry.unique_id}_{observation.key}": observation_unit(
+            settings, observation
+        )
+        for observation in OBSERVATIONS
+        if observation.unit_type is not None
+    }
+    registry = er.async_get(hass)
+    for registry_entry in tuple(registry.entities.values()):
+        if (
+            registry_entry.config_entry_id != entry.entry_id
+            or registry_entry.domain != "sensor"
+            or registry_entry.platform != DOMAIN
+            or registry_entry.unique_id not in units_by_unique_id
+        ):
+            continue
+
+        unit = units_by_unique_id[registry_entry.unique_id]
+        private_options = dict(
+            registry_entry.options.get("sensor.private", {})
+        )
+        if private_options.get("suggested_unit_of_measurement") == unit:
+            continue
+
+        private_options["suggested_unit_of_measurement"] = unit
+        registry.async_update_entity_options(
+            registry_entry.entity_id,
+            "sensor.private",
+            private_options,
+        )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

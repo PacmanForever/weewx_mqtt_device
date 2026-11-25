@@ -60,6 +60,18 @@
       },
       "outside_alarm_2": {
         "name": "Alarma exterior 2"
+      },
+      "freezing": {
+        "name": "Glaçant"
+      },
+      "raining": {
+        "name": "Plovent"
+      },
+      "windy": {
+        "name": "Ventant"
+      },
+      "humidex_high": {
+        "name": "Xafogor"
       }
     },
     "sensor": {

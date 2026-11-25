@@ -144,6 +144,124 @@ async def test_wind_speed_and_gust_share_station_unit(hass):
 
 
 @pytest.mark.asyncio
+async def test_derived_weather_binary_sensors_follow_station_values(hass):
+    """Derived binary sensors use configured units and add only once."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_DEVICE_NAME: "Weather", CONF_TOPIC_PREFIX: "weewx"},
+        options={"unit_temperature": "°F"},
+        unique_id="weather",
+    )
+    runtime = StationRuntime(hass, entry)
+    hass.data[DOMAIN] = {entry.entry_id: runtime}
+    binary_sensors = []
+    await binary_sensor_platform.async_setup_entry(
+        hass,
+        entry,
+        binary_sensors.extend,
+    )
+    assert binary_sensors == []
+
+    def publish(topic, payload):
+        runtime._message_received(
+            SimpleNamespace(topic=f"weewx/{topic}", payload=payload)
+        )
+
+    publish("outTemp_C", "0")
+    publish("humidex_C", "25")
+    publish("rainRate_cm_per_hour", "0")
+    publish("windSpeed_kph", "0")
+
+    sensors = {sensor._observation.key: sensor for sensor in binary_sensors}
+    assert set(sensors) == {"freezing", "raining", "windy", "humidex_high"}
+    assert sensors["freezing"].is_on is True
+    assert sensors["raining"].is_on is False
+    assert sensors["windy"].is_on is False
+    assert sensors["humidex_high"].is_on is False
+    assert all(sensor.available for sensor in sensors.values())
+
+    publish("outTemp_C", "1")
+    publish("humidex_C", "25.1")
+    publish("rainRate_cm_per_hour", "0.1")
+    publish("windSpeed_kph", "1")
+
+    assert sensors["freezing"].is_on is False
+    assert sensors["raining"].is_on is True
+    assert sensors["windy"].is_on is True
+    assert sensors["humidex_high"].is_on is True
+    assert len(binary_sensors) == 4
+    runtime.async_stop()
+
+
+def test_temperature_unit_change_converts_all_sensors_without_new_ids(hass):
+    """Reloaded temperature sensors use the new unit and keep their identities."""
+    entry = SimpleNamespace(
+        entry_id="temperature",
+        unique_id="temperature",
+        data={
+            CONF_DEVICE_NAME: "Temperature station",
+            CONF_TOPIC_PREFIX: "weewx",
+        },
+        options={"unit_temperature": "°C"},
+    )
+    observations = [
+        observation for observation in OBSERVATIONS
+        if observation.unit_type == "temperature"
+    ]
+
+    def create_sensors(runtime):
+        settings = {**entry.data, **entry.options}
+        return [
+            WeeWxSensor(runtime, entry, observation, settings)
+            for observation in observations
+        ]
+
+    celsius_runtime = StationRuntime(hass, entry)
+    celsius_sensors = create_sensors(celsius_runtime)
+    for sensor in celsius_sensors:
+        sensor.hass = hass
+    for observation in observations:
+        celsius_runtime._message_received(
+            SimpleNamespace(
+                topic=f"weewx/{observation.suffix}",
+                payload="20",
+            )
+        )
+
+    entry.options = {"unit_temperature": "°F"}
+    fahrenheit_runtime = StationRuntime(hass, entry)
+    fahrenheit_sensors = create_sensors(fahrenheit_runtime)
+    for sensor in fahrenheit_sensors:
+        sensor.hass = hass
+    for observation in observations:
+        fahrenheit_runtime._message_received(
+            SimpleNamespace(
+                topic=f"weewx/{observation.suffix}",
+                payload="20",
+            )
+        )
+
+    assert [sensor.native_unit_of_measurement for sensor in celsius_sensors] == [
+        "°C"
+    ] * len(observations)
+    assert [sensor.native_value for sensor in celsius_sensors] == [
+        20.0
+    ] * len(observations)
+    assert [sensor.native_unit_of_measurement for sensor in fahrenheit_sensors] == [
+        "°F"
+    ] * len(observations)
+    assert [sensor.unit_of_measurement for sensor in fahrenheit_sensors] == [
+        "°F"
+    ] * len(observations)
+    assert [sensor.native_value for sensor in fahrenheit_sensors] == [
+        68.0
+    ] * len(observations)
+    assert [sensor.unique_id for sensor in fahrenheit_sensors] == [
+        sensor.unique_id for sensor in celsius_sensors
+    ]
+
+
+@pytest.mark.asyncio
 async def test_runtime_logs_malformed_payload_and_marks_value_unavailable(
     hass, caplog
 ):
@@ -239,10 +357,13 @@ async def test_platform_setup_adds_entities_after_first_valid_value(hass):
     assert sensors[1].native_value == 250
     assert sensors[1].entity_description.suggested_display_precision == 0
 
-    assert len(binary_sensors) == 1
-    assert binary_sensors[0]._observation.key == "battery_ok"
-    assert binary_sensors[0].is_on is False
-    assert binary_sensors[0].available
+    assert {
+        sensor._observation.key: sensor.is_on for sensor in binary_sensors
+    } == {
+        "freezing": False,
+        "battery_ok": False,
+    }
+    assert all(sensor.available for sensor in binary_sensors)
 
 
 @pytest.mark.asyncio
@@ -331,6 +452,80 @@ async def test_setup_and_unload_entry_manage_station_runtime(
 
     assert unsubscribe.called
     assert DOMAIN not in hass.data
+
+
+@pytest.mark.asyncio
+async def test_setup_updates_registered_sensor_unit_without_creating_an_entity(
+    hass, enable_custom_integrations
+):
+    """A changed station unit updates its existing sensor registry entry."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_DEVICE_NAME: "Station", CONF_TOPIC_PREFIX: "weewx"},
+        options={"unit_temperature": "°F"},
+        unique_id="station",
+    )
+    entry.add_to_hass(hass)
+    observation = next(
+        item for item in OBSERVATIONS if item.key == "outdoor_temperature"
+    )
+    registry = er.async_get(hass)
+    registered = registry.async_get_or_create(
+        "sensor",
+        DOMAIN,
+        f"{entry.unique_id}_{observation.key}",
+        config_entry=entry,
+        unit_of_measurement="°C",
+        get_initial_options=lambda: {
+            "sensor.private": {"suggested_unit_of_measurement": "°C"}
+        },
+    )
+    unsubscribe = Mock()
+
+    with (
+        patch(
+            "custom_components.weewx_mqtt_device.runtime.mqtt.async_subscribe",
+            new=AsyncMock(return_value=unsubscribe),
+        ),
+        patch.object(
+            hass.config_entries,
+            "async_forward_entry_setups",
+            new=AsyncMock(),
+        ),
+    ):
+        assert await async_setup_entry(hass, entry)
+
+    updated = registry.async_get(registered.entity_id)
+    assert updated is not None
+    assert updated.options["sensor.private"]["suggested_unit_of_measurement"] == "°F"
+
+    runtime = hass.data[DOMAIN][entry.entry_id]
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/outTemp_C", payload="20")
+    )
+    sensor = WeeWxSensor(
+        runtime,
+        entry,
+        observation,
+        {**entry.data, **entry.options},
+    )
+    platform = SimpleNamespace(
+        domain="sensor",
+        platform_name=DOMAIN,
+        platform_data=Mock(),
+    )
+    sensor.add_to_platform_start(hass, platform, None)
+
+    assert sensor.unique_id == f"{entry.unique_id}_{observation.key}"
+    assert sensor.native_value == 68.0
+    assert sensor.state == 68.0
+    assert sensor.unit_of_measurement == "°F"
+    assert registry.async_get_entity_id(
+        "sensor",
+        DOMAIN,
+        f"{entry.unique_id}_{observation.key}",
+    ) == registered.entity_id
+    runtime.async_stop()
 
 
 @pytest.mark.asyncio

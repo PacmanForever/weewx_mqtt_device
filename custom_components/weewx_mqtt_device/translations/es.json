@@ -60,6 +60,18 @@
       },
       "outside_alarm_2": {
         "name": "Alarma exterior 2"
+      },
+      "freezing": {
+        "name": "Helada"
+      },
+      "raining": {
+        "name": "Lluvia actual"
+      },
+      "windy": {
+        "name": "Viento"
+      },
+      "humidex_high": {
+        "name": "Bochorno"
       }
     },
     "sensor": {
