@@ -33,6 +33,8 @@ class StationRuntime:
         self.values: dict[str, str | float | bool | None] = {}
         self._unsubscribers: list[Callable[[], None]] = []
         self._topic_observations: dict[str, list[Observation]] = defaultdict(list)
+        self._entity_adders: dict[str, Callable[[Observation], None]] = {}
+        self._added_entity_keys: set[str] = set()
         settings = {**entry.data, **entry.options}
         self._settings = settings
         prefix = settings[CONF_TOPIC_PREFIX].strip("/")
@@ -40,6 +42,18 @@ class StationRuntime:
             topic = f"{prefix}/{observation.suffix}"
             self._topic_observations[topic].append(observation)
         self.signal = f"{DOMAIN}_{entry.entry_id}"
+
+    @callback
+    def register_entity_adder(
+        self,
+        platform: str,
+        add_entity: Callable[[Observation], None],
+    ) -> None:
+        """Register a platform callback and add observations already received."""
+        self._entity_adders[platform] = add_entity
+        for observation in OBSERVATIONS:
+            if self._platform_for(observation) == platform:
+                self._add_entity_if_ready(observation)
 
     async def async_start(self) -> None:
         """Subscribe once to each topic used by this station."""
@@ -70,7 +84,30 @@ class StationRuntime:
                     "Invalid MQTT payload for WeeWX observation %s",
                     observation.key,
                 )
+            else:
+                self._add_entity_if_ready(observation)
         async_dispatcher_send(self.hass, self.signal)
+
+    @staticmethod
+    def _platform_for(observation: Observation) -> str:
+        """Return the Home Assistant platform for an observation."""
+        return "binary_sensor" if observation.kind == "binary" else "sensor"
+
+    @callback
+    def _add_entity_if_ready(self, observation: Observation) -> None:
+        """Add a mapped entity once its first valid value has arrived."""
+        if (
+            observation.key in self._added_entity_keys
+            or self.values.get(observation.key) is None
+        ):
+            return
+
+        add_entity = self._entity_adders.get(self._platform_for(observation))
+        if add_entity is None:
+            return
+
+        add_entity(observation)
+        self._added_entity_keys.add(observation.key)
 
     def async_stop(self) -> None:
         """Unsubscribe from all topics owned by this station."""

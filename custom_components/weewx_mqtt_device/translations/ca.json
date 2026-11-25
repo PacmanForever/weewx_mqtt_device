@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Afegeix una estació WeeWX",
-        "description": "Primer cal configurar la integració MQTT de Home Assistant. Afegeix una entrada per a cada estació i tria una unitat per tipus de mesura; la velocitat i els cops de vent comparteixen unitat.",
+        "description": "Afegeix una entrada per a cada estació i tria una unitat per a cada tipus de mesura.",
         "data": {
           "device_name": "Nom del dispositiu de l'estació",
           "topic_prefix": "Prefix dels tòpics MQTT",
@@ -26,7 +26,6 @@
     "step": {
       "init": {
         "title": "Configuració de l'estació",
-        "description": "Tria una unitat per tipus de mesura. La velocitat i els cops de vent comparteixen unitat. Els valors es converteixen des de les unitats del mapping WeeWX.",
         "data": {
           "device_name": "Nom del dispositiu de l'estació",
           "topic_prefix": "Prefix dels tòpics MQTT",
@@ -49,6 +48,54 @@
     "binary_sensor": {
       "battery_ok": {
         "name": "Bateria correcta"
+      },
+      "rain_alarm": {
+        "name": "Alarma de pluja"
+      },
+      "inside_alarm": {
+        "name": "Alarma interior"
+      },
+      "outside_alarm_1": {
+        "name": "Alarma exterior 1"
+      },
+      "outside_alarm_2": {
+        "name": "Alarma exterior 2"
+      },
+      "soil_leaf_alarm_1": {
+        "name": "Alarma de sòl/fulles 1"
+      },
+      "soil_leaf_alarm_2": {
+        "name": "Alarma de sòl/fulles 2"
+      },
+      "soil_leaf_alarm_3": {
+        "name": "Alarma de sòl/fulles 3"
+      },
+      "soil_leaf_alarm_4": {
+        "name": "Alarma de sòl/fulles 4"
+      },
+      "extra_alarm_1": {
+        "name": "Alarma addicional 1"
+      },
+      "extra_alarm_2": {
+        "name": "Alarma addicional 2"
+      },
+      "extra_alarm_3": {
+        "name": "Alarma addicional 3"
+      },
+      "extra_alarm_4": {
+        "name": "Alarma addicional 4"
+      },
+      "extra_alarm_5": {
+        "name": "Alarma addicional 5"
+      },
+      "extra_alarm_6": {
+        "name": "Alarma addicional 6"
+      },
+      "extra_alarm_7": {
+        "name": "Alarma addicional 7"
+      },
+      "extra_alarm_8": {
+        "name": "Alarma addicional 8"
       }
     },
     "sensor": {
@@ -120,6 +167,114 @@
       },
       "wind_direction": {
         "name": "Direcció del vent"
+      },
+      "station_pressure": {
+        "name": "Pressió de l'estació"
+      },
+      "altimeter_setting": {
+        "name": "Pressió altimètrica"
+      },
+      "apparent_temperature": {
+        "name": "Temperatura aparent"
+      },
+      "humidex": {
+        "name": "Humidex"
+      },
+      "indoor_temperature": {
+        "name": "Temperatura interior"
+      },
+      "indoor_humidity": {
+        "name": "Humitat interior"
+      },
+      "indoor_dew_point": {
+        "name": "Punt de rosada interior"
+      },
+      "uv_index": {
+        "name": "Índex UV"
+      },
+      "high_uv_index": {
+        "name": "Índex UV màxim"
+      },
+      "solar_radiation": {
+        "name": "Radiació solar"
+      },
+      "high_solar_radiation": {
+        "name": "Radiació solar màxima"
+      },
+      "illuminance": {
+        "name": "Il·luminància"
+      },
+      "wind_speed_10min": {
+        "name": "Velocitat del vent de 10 minuts"
+      },
+      "wind_gust_direction": {
+        "name": "Direcció del cop de vent"
+      },
+      "wind_run": {
+        "name": "Recorregut del vent"
+      },
+      "storm_rain": {
+        "name": "Pluja de la tempesta"
+      },
+      "rain_total": {
+        "name": "Pluja total"
+      },
+      "evapotranspiration": {
+        "name": "Evapotranspiració"
+      },
+      "evapotranspiration_today": {
+        "name": "Evapotranspiració d'avui"
+      },
+      "evapotranspiration_month": {
+        "name": "Evapotranspiració d'aquest mes"
+      },
+      "evapotranspiration_year": {
+        "name": "Evapotranspiració d'aquest any"
+      },
+      "console_battery_voltage": {
+        "name": "Voltatge de la bateria de la consola"
+      },
+      "outdoor_sensor_battery_status": {
+        "name": "Estat de la bateria del sensor exterior"
+      },
+      "signal_reception": {
+        "name": "Recepció del senyal"
+      },
+      "forecast_rule": {
+        "name": "Regla de previsió"
+      },
+      "trend_icon": {
+        "name": "Índex de tendència"
+      },
+      "high_outdoor_temperature": {
+        "name": "Temperatura exterior màxima"
+      },
+      "low_outdoor_temperature": {
+        "name": "Temperatura exterior mínima"
+      },
+      "water_temperature": {
+        "name": "Temperatura de l'aigua"
+      },
+      "leaf_temperature": {
+        "name": "Temperatura de la fulla"
+      },
+      "archive_interval": {
+        "name": "Interval d'arxiu"
+      },
+      "storm_start": {
+        "name": "Inici de la tempesta"
+      },
+      "delay": {
+        "name": "Retard"
+      },
+      "pointer": {
+        "name": "Punter del registre"
+      },
+      "status": {
+        "name": "Estat de WeeWX"
+      },
+      "unit_system_code": {
+        "name": "Codi del sistema d'unitats"
       }
     }
   }

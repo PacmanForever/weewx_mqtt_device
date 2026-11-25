@@ -72,9 +72,11 @@ async def test_runtime_subscribes_once_per_topic_and_decodes_payload(
         subscriptions["weewx/dateTime"](
             SimpleNamespace(topic="weewx/dateTime", payload="0")
         )
+        await hass.async_block_till_done()
         subscriptions["weewx/windDir"](
             SimpleNamespace(topic="weewx/windDir", payload="202")
         )
+        await hass.async_block_till_done()
 
     assert runtime.values["observation_datetime"] == "01/01/70 00:00:00"
     assert runtime.values["observation_time"] == "00:00:00"
@@ -182,8 +184,8 @@ def test_entities_use_station_device_metadata_and_force_rain_updates(hass):
 
 
 @pytest.mark.asyncio
-async def test_platform_setup_creates_each_mapped_entity(hass):
-    """The sensor platforms expose the complete observation set."""
+async def test_platform_setup_adds_entities_after_first_valid_value(hass):
+    """Only observations with a valid MQTT value are added, exactly once."""
     entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_DEVICE_NAME: "Garden", CONF_TOPIC_PREFIX: "weewx/garden"},
@@ -201,32 +203,66 @@ async def test_platform_setup_creates_each_mapped_entity(hass):
         binary_sensors.extend,
     )
 
-    assert len(sensors) == len(OBSERVATIONS) - 1
+    assert sensors == []
+    assert binary_sensors == []
+
+    runtime._message_received(
+        SimpleNamespace(
+            topic="weewx/garden/outTemp_C",
+            payload="not-a-number",
+        )
+    )
+    assert sensors == []
+
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/garden/outTemp_C", payload="20.5")
+    )
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/garden/outTemp_C", payload="21.5")
+    )
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/garden/txBatteryStatus", payload="0")
+    )
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/garden/radiation_Wpm2", payload="250")
+    )
+
+    assert [sensor._observation.key for sensor in sensors] == [
+        "outdoor_temperature",
+        "solar_radiation",
+    ]
+    assert sensors[0].native_value == 21.5
+    assert sensors[0].available
+    assert sensors[0].native_unit_of_measurement == "°C"
+    assert sensors[0].device_info["identifiers"] == {(DOMAIN, entry.unique_id)}
+    assert sensors[1].native_value == 250
+    assert sensors[1].entity_description.suggested_display_precision == 0
+
     assert len(binary_sensors) == 1
-    for sensor in sensors:
-        if sensor._observation.precision is not None:
-            assert (
-                sensor.entity_description.suggested_display_precision
-                == sensor._observation.precision
-            )
+    assert binary_sensors[0]._observation.key == "battery_ok"
+    assert binary_sensors[0].is_on is False
+    assert binary_sensors[0].available
 
-    pressure = next(
-        sensor
-        for sensor in sensors
-        if sensor._observation.key == "atmospheric_pressure"
-    )
-    assert pressure.entity_description.suggested_display_precision == 0
 
-    temperature = next(
-        sensor
-        for sensor in sensors
-        if sensor._observation.key == "outdoor_temperature"
+@pytest.mark.asyncio
+async def test_platform_setup_adds_values_received_before_registration(hass):
+    """Values received during entry setup are added when platforms load."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_DEVICE_NAME: "Garden", CONF_TOPIC_PREFIX: "weewx/garden"},
+        unique_id="garden",
     )
-    runtime.values["outdoor_temperature"] = 20.5
-    assert temperature.native_value == 20.5
-    assert temperature.available
-    assert temperature.native_unit_of_measurement == "°C"
-    assert temperature.device_info["identifiers"] == {(DOMAIN, entry.unique_id)}
+    runtime = StationRuntime(hass, entry)
+    runtime._message_received(
+        SimpleNamespace(topic="weewx/garden/outTemp_C", payload="20")
+    )
+    hass.data[DOMAIN] = {entry.entry_id: runtime}
+    sensors = []
+
+    await sensor_platform.async_setup_entry(hass, entry, sensors.extend)
+
+    assert len(sensors) == 1
+    assert sensors[0]._observation.key == "outdoor_temperature"
 
 
 @pytest.mark.asyncio

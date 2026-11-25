@@ -26,7 +26,6 @@
     "step": {
       "init": {
         "title": "Configuración de la estación",
-        "description": "Elige una unidad por tipo de medición. La velocidad y las rachas de viento comparten unidad. Los valores se convierten desde las unidades del mapping de WeeWX.",
         "data": {
           "device_name": "Nombre del dispositivo de la estación",
           "topic_prefix": "Prefijo de los tópicos MQTT",
@@ -49,6 +48,54 @@
     "binary_sensor": {
       "battery_ok": {
         "name": "Batería correcta"
+      },
+      "rain_alarm": {
+        "name": "Alarma de lluvia"
+      },
+      "inside_alarm": {
+        "name": "Alarma interior"
+      },
+      "outside_alarm_1": {
+        "name": "Alarma exterior 1"
+      },
+      "outside_alarm_2": {
+        "name": "Alarma exterior 2"
+      },
+      "soil_leaf_alarm_1": {
+        "name": "Alarma de suelo/hoja 1"
+      },
+      "soil_leaf_alarm_2": {
+        "name": "Alarma de suelo/hoja 2"
+      },
+      "soil_leaf_alarm_3": {
+        "name": "Alarma de suelo/hoja 3"
+      },
+      "soil_leaf_alarm_4": {
+        "name": "Alarma de suelo/hoja 4"
+      },
+      "extra_alarm_1": {
+        "name": "Alarma adicional 1"
+      },
+      "extra_alarm_2": {
+        "name": "Alarma adicional 2"
+      },
+      "extra_alarm_3": {
+        "name": "Alarma adicional 3"
+      },
+      "extra_alarm_4": {
+        "name": "Alarma adicional 4"
+      },
+      "extra_alarm_5": {
+        "name": "Alarma adicional 5"
+      },
+      "extra_alarm_6": {
+        "name": "Alarma adicional 6"
+      },
+      "extra_alarm_7": {
+        "name": "Alarma adicional 7"
+      },
+      "extra_alarm_8": {
+        "name": "Alarma adicional 8"
       }
     },
     "sensor": {
@@ -120,6 +167,114 @@
       },
       "wind_direction": {
         "name": "Dirección del viento"
+      },
+      "station_pressure": {
+        "name": "Presión en la estación"
+      },
+      "altimeter_setting": {
+        "name": "Presión altimétrica"
+      },
+      "apparent_temperature": {
+        "name": "Temperatura aparente"
+      },
+      "humidex": {
+        "name": "Humidex"
+      },
+      "indoor_temperature": {
+        "name": "Temperatura interior"
+      },
+      "indoor_humidity": {
+        "name": "Humedad interior"
+      },
+      "indoor_dew_point": {
+        "name": "Punto de rocío interior"
+      },
+      "uv_index": {
+        "name": "Índice UV"
+      },
+      "high_uv_index": {
+        "name": "Índice UV máximo"
+      },
+      "solar_radiation": {
+        "name": "Radiación solar"
+      },
+      "high_solar_radiation": {
+        "name": "Radiación solar máxima"
+      },
+      "illuminance": {
+        "name": "Iluminancia"
+      },
+      "wind_speed_10min": {
+        "name": "Velocidad del viento de 10 minutos"
+      },
+      "wind_gust_direction": {
+        "name": "Dirección de la racha de viento"
+      },
+      "wind_run": {
+        "name": "Recorrido del viento"
+      },
+      "storm_rain": {
+        "name": "Lluvia de la tormenta"
+      },
+      "rain_total": {
+        "name": "Lluvia total"
+      },
+      "evapotranspiration": {
+        "name": "Evapotranspiración"
+      },
+      "evapotranspiration_today": {
+        "name": "Evapotranspiración de hoy"
+      },
+      "evapotranspiration_month": {
+        "name": "Evapotranspiración de este mes"
+      },
+      "evapotranspiration_year": {
+        "name": "Evapotranspiración de este año"
+      },
+      "console_battery_voltage": {
+        "name": "Voltaje de la batería de la consola"
+      },
+      "outdoor_sensor_battery_status": {
+        "name": "Estado de la batería del sensor exterior"
+      },
+      "signal_reception": {
+        "name": "Recepción de señal"
+      },
+      "forecast_rule": {
+        "name": "Regla de previsión"
+      },
+      "trend_icon": {
+        "name": "Icono de tendencia"
+      },
+      "high_outdoor_temperature": {
+        "name": "Temperatura exterior máxima"
+      },
+      "low_outdoor_temperature": {
+        "name": "Temperatura exterior mínima"
+      },
+      "water_temperature": {
+        "name": "Temperatura del agua"
+      },
+      "leaf_temperature": {
+        "name": "Temperatura de la hoja"
+      },
+      "archive_interval": {
+        "name": "Intervalo de archivo"
+      },
+      "storm_start": {
+        "name": "Inicio de la tormenta"
+      },
+      "delay": {
+        "name": "Retraso"
+      },
+      "pointer": {
+        "name": "Puntero del registro"
+      },
+      "status": {
+        "name": "Estado de WeeWX"
+      },
+      "unit_system_code": {
+        "name": "Código del sistema de unidades"
       }
     }
   }

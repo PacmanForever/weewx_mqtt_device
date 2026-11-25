@@ -21,7 +21,6 @@ from .const import (
     DOMAIN,
     MANUFACTURER,
     MODEL,
-    OBSERVATIONS,
     Observation,
     observation_unit,
 )
@@ -36,13 +35,12 @@ async def async_setup_entry(
     """Set up WeeWX sensors for one config entry."""
     runtime: StationRuntime = hass.data[DOMAIN][entry.entry_id]
     settings = {**entry.data, **entry.options}
-    async_add_entities(
-        [
-            WeeWxSensor(runtime, entry, observation, settings)
-            for observation in OBSERVATIONS
-            if observation.kind != "binary"
-        ]
-    )
+
+    @callback
+    def add_sensor(observation: Observation) -> None:
+        async_add_entities([WeeWxSensor(runtime, entry, observation, settings)])
+
+    runtime.register_entity_adder("sensor", add_sensor)
 
 
 class WeeWxSensor(SensorEntity):

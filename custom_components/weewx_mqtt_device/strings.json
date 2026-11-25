@@ -26,7 +26,6 @@
     "step": {
       "init": {
         "title": "Station settings",
-        "description": "Choose the unit for each measurement. Values are converted from the units used by the WeeWX mapping.",
         "data": {
           "device_name": "Station device name",
           "topic_prefix": "MQTT topic prefix",
@@ -49,6 +48,54 @@
     "binary_sensor": {
       "battery_ok": {
         "name": "Battery OK"
+      },
+      "rain_alarm": {
+        "name": "Rain alarm"
+      },
+      "inside_alarm": {
+        "name": "Indoor alarm"
+      },
+      "outside_alarm_1": {
+        "name": "Outdoor alarm 1"
+      },
+      "outside_alarm_2": {
+        "name": "Outdoor alarm 2"
+      },
+      "soil_leaf_alarm_1": {
+        "name": "Soil/leaf alarm 1"
+      },
+      "soil_leaf_alarm_2": {
+        "name": "Soil/leaf alarm 2"
+      },
+      "soil_leaf_alarm_3": {
+        "name": "Soil/leaf alarm 3"
+      },
+      "soil_leaf_alarm_4": {
+        "name": "Soil/leaf alarm 4"
+      },
+      "extra_alarm_1": {
+        "name": "Extra alarm 1"
+      },
+      "extra_alarm_2": {
+        "name": "Extra alarm 2"
+      },
+      "extra_alarm_3": {
+        "name": "Extra alarm 3"
+      },
+      "extra_alarm_4": {
+        "name": "Extra alarm 4"
+      },
+      "extra_alarm_5": {
+        "name": "Extra alarm 5"
+      },
+      "extra_alarm_6": {
+        "name": "Extra alarm 6"
+      },
+      "extra_alarm_7": {
+        "name": "Extra alarm 7"
+      },
+      "extra_alarm_8": {
+        "name": "Extra alarm 8"
       }
     },
     "sensor": {
@@ -120,6 +167,114 @@
       },
       "wind_direction": {
         "name": "Wind direction"
+      },
+      "station_pressure": {
+        "name": "Station pressure"
+      },
+      "altimeter_setting": {
+        "name": "Altimeter setting"
+      },
+      "apparent_temperature": {
+        "name": "Apparent temperature"
+      },
+      "humidex": {
+        "name": "Humidex"
+      },
+      "indoor_temperature": {
+        "name": "Indoor temperature"
+      },
+      "indoor_humidity": {
+        "name": "Indoor humidity"
+      },
+      "indoor_dew_point": {
+        "name": "Indoor dew point"
+      },
+      "uv_index": {
+        "name": "UV index"
+      },
+      "high_uv_index": {
+        "name": "High UV index"
+      },
+      "solar_radiation": {
+        "name": "Solar radiation"
+      },
+      "high_solar_radiation": {
+        "name": "High solar radiation"
+      },
+      "illuminance": {
+        "name": "Illuminance"
+      },
+      "wind_speed_10min": {
+        "name": "10-minute wind speed"
+      },
+      "wind_gust_direction": {
+        "name": "Wind gust direction"
+      },
+      "wind_run": {
+        "name": "Wind run"
+      },
+      "storm_rain": {
+        "name": "Storm rain"
+      },
+      "rain_total": {
+        "name": "Total rain"
+      },
+      "evapotranspiration": {
+        "name": "Evapotranspiration"
+      },
+      "evapotranspiration_today": {
+        "name": "Evapotranspiration today"
+      },
+      "evapotranspiration_month": {
+        "name": "Evapotranspiration this month"
+      },
+      "evapotranspiration_year": {
+        "name": "Evapotranspiration this year"
+      },
+      "console_battery_voltage": {
+        "name": "Console battery voltage"
+      },
+      "outdoor_sensor_battery_status": {
+        "name": "Outdoor sensor battery status"
+      },
+      "signal_reception": {
+        "name": "Signal reception"
+      },
+      "forecast_rule": {
+        "name": "Forecast rule"
+      },
+      "trend_icon": {
+        "name": "Trend icon"
+      },
+      "high_outdoor_temperature": {
+        "name": "High outdoor temperature"
+      },
+      "low_outdoor_temperature": {
+        "name": "Low outdoor temperature"
+      },
+      "water_temperature": {
+        "name": "Water temperature"
+      },
+      "leaf_temperature": {
+        "name": "Leaf temperature"
+      },
+      "archive_interval": {
+        "name": "Archive interval"
+      },
+      "storm_start": {
+        "name": "Storm start"
+      },
+      "delay": {
+        "name": "Delay"
+      },
+      "pointer": {
+        "name": "Record pointer"
+      },
+      "status": {
+        "name": "WeeWX status"
+      },
+      "unit_system_code": {
+        "name": "Unit system code"
       }
     }
   }

@@ -48,6 +48,19 @@ class MappingTests(unittest.TestCase):
         )
         self.assertEqual(observation_unit({}, outdoor_temperature), "°C")
 
+    def test_unit_defaults_match_units_encoded_in_topic_suffixes(self):
+        rain = observation("rain_last_interval")
+        rain_rate = observation("current_rain_rate")
+        pressure = observation("atmospheric_pressure")
+
+        self.assertEqual(observation_unit({}, rain), "cm")
+        self.assertEqual(observation_unit({}, rain_rate), "cm/h")
+        self.assertEqual(observation_unit({}, pressure), "mbar")
+        self.assertEqual(decode_payload("1.23", rain, "cm"), 1.2)
+        self.assertEqual(decode_payload("1.26", rain_rate, "cm/h"), 1.3)
+        self.assertEqual(decode_payload("1.23", rain, "mm"), 12.3)
+        self.assertEqual(decode_payload("1.26", rain_rate, "mm/h"), 12.6)
+
     def test_temperature_and_distance_conversions(self):
         self.assertEqual(
             decode_payload("20", observation("outdoor_temperature"), "°F"),
@@ -99,6 +112,10 @@ class MappingTests(unittest.TestCase):
             decode_payload("1.25", observation("current_rain_rate"), "in/h"),
             0.5,
         )
+        self.assertEqual(
+            decode_payload("1.25", observation("storm_rain"), "mm"),
+            12.5,
+        )
 
     def test_wind_speed_conversions_and_rounding(self):
         self.assertEqual(
@@ -125,9 +142,15 @@ class MappingTests(unittest.TestCase):
     def test_binary_and_plain_numeric_values(self):
         self.assertFalse(decode_payload("0.0", observation("battery_ok")))
         self.assertTrue(decode_payload("1.0", observation("battery_ok")))
+        self.assertFalse(decode_payload("0.0", observation("rain_alarm")))
+        self.assertTrue(decode_payload("1.0", observation("rain_alarm")))
         self.assertEqual(
             decode_payload("75.6", observation("humidity")),
             76,
+        )
+        self.assertEqual(
+            decode_payload("12.345", observation("apparent_temperature"), "°F"),
+            54.2,
         )
 
     def test_direction_sector_boundaries_and_localized_labels(self):
