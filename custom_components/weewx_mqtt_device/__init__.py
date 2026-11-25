@@ -4,15 +4,43 @@ from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN
 from .runtime import StationRuntime
 
 PLATFORMS = ("binary_sensor", "sensor")
+_OBSOLETE_BINARY_SENSOR_KEYS = (
+    "extra_alarm_1",
+    "extra_alarm_2",
+    "extra_alarm_3",
+    "extra_alarm_4",
+    "extra_alarm_5",
+    "extra_alarm_6",
+    "extra_alarm_7",
+    "extra_alarm_8",
+    "soil_leaf_alarm_1",
+    "soil_leaf_alarm_2",
+    "soil_leaf_alarm_3",
+    "soil_leaf_alarm_4",
+)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up a WeeWX station config entry."""
+    registry = er.async_get(hass)
+    obsolete_unique_ids = {
+        f"{entry.unique_id}_{key}" for key in _OBSOLETE_BINARY_SENSOR_KEYS
+    }
+    for registry_entry in tuple(registry.entities.values()):
+        if (
+            registry_entry.config_entry_id == entry.entry_id
+            and registry_entry.domain == "binary_sensor"
+            and registry_entry.platform == DOMAIN
+            and registry_entry.unique_id in obsolete_unique_ids
+        ):
+            registry.async_remove(registry_entry.entity_id)
+
     runtime = StationRuntime(hass, entry)
     await runtime.async_start()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = runtime

@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.plugins import enable_custom_integrations
@@ -330,6 +331,79 @@ async def test_setup_and_unload_entry_manage_station_runtime(
 
     assert unsubscribe.called
     assert DOMAIN not in hass.data
+
+
+@pytest.mark.asyncio
+async def test_setup_removes_unwanted_alarm_entities_from_registry(
+    hass, enable_custom_integrations
+):
+    """Setup removes obsolete alarm entities but keeps other registry entries."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_DEVICE_NAME: "Station", CONF_TOPIC_PREFIX: "weewx"},
+        unique_id="station",
+    )
+    entry.add_to_hass(hass)
+    registry = er.async_get(hass)
+    obsolete_keys = (
+        "extra_alarm_1",
+        "extra_alarm_2",
+        "extra_alarm_3",
+        "extra_alarm_4",
+        "extra_alarm_5",
+        "extra_alarm_6",
+        "extra_alarm_7",
+        "extra_alarm_8",
+        "soil_leaf_alarm_1",
+        "soil_leaf_alarm_2",
+        "soil_leaf_alarm_3",
+        "soil_leaf_alarm_4",
+    )
+    for key in obsolete_keys:
+        registry.async_get_or_create(
+            "binary_sensor",
+            DOMAIN,
+            f"{entry.unique_id}_{key}",
+            config_entry=entry,
+        )
+    battery_entry = registry.async_get_or_create(
+        "binary_sensor",
+        DOMAIN,
+        f"{entry.unique_id}_battery_ok",
+        config_entry=entry,
+    )
+
+    with (
+        patch(
+            "custom_components.weewx_mqtt_device.runtime.mqtt.async_subscribe",
+            new=AsyncMock(return_value=Mock()),
+        ),
+        patch.object(
+            hass.config_entries,
+            "async_forward_entry_setups",
+            new=AsyncMock(),
+        ),
+    ):
+        assert await async_setup_entry(hass, entry)
+
+    assert all(
+        registry.async_get_entity_id(
+            "binary_sensor",
+            DOMAIN,
+            f"{entry.unique_id}_{key}",
+        )
+        is None
+        for key in obsolete_keys
+    )
+    assert (
+        registry.async_get_entity_id(
+            "binary_sensor",
+            DOMAIN,
+            f"{entry.unique_id}_battery_ok",
+        )
+        == battery_entry.entity_id
+    )
+    hass.data[DOMAIN][entry.entry_id].async_stop()
 
 
 @pytest.mark.asyncio

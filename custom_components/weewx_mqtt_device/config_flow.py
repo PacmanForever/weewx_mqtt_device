@@ -10,6 +10,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.util.unit_system import UnitSystem
 from .const import (
     CONF_DEVICE_NAME,
     CONF_TOPIC_PREFIX,
@@ -17,7 +18,6 @@ from .const import (
     DOMAIN,
     OBSERVATIONS,
     UNIT_CHOICES,
-    observation_unit,
 )
 
 
@@ -47,15 +47,62 @@ def _prefix_in_use(
     )
 
 
-def _unit_schema(settings: dict[str, Any]) -> dict[vol.Marker, Any]:
-    """Build one output-unit selector per physical measurement type."""
+def _system_unit_defaults(unit_system: UnitSystem) -> dict[str, str]:
+    """Map Home Assistant's global units to this integration's unit choices."""
+    precipitation = str(unit_system.accumulated_precipitation_unit)
+    defaults = {
+        "temperature": str(unit_system.temperature_unit),
+        "distance": {
+            "km": "m",
+            "mi": "ft",
+            "m": "m",
+            "ft": "ft",
+        }.get(str(unit_system.length_unit)),
+        "pressure": {
+            "Pa": "hPa",
+            "psi": "inHg",
+            "hPa": "hPa",
+            "mbar": "mbar",
+            "inHg": "inHg",
+        }.get(str(unit_system.pressure_unit)),
+        "rain": precipitation,
+        "rain_rate": {
+            "mm": "mm/h",
+            "cm": "cm/h",
+            "in": "in/h",
+        }.get(precipitation),
+        "wind_speed": str(unit_system.wind_speed_unit),
+    }
+    unsupported = [
+        unit_type
+        for unit_type, unit in defaults.items()
+        if unit not in UNIT_CHOICES[unit_type]
+    ]
+    if unsupported:
+        raise ValueError(
+            "Home Assistant unit system has no supported defaults for "
+            + ", ".join(unsupported)
+        )
+    return {unit_type: unit for unit_type, unit in defaults.items() if unit is not None}
+
+
+def _unit_schema(
+    settings: dict[str, Any],
+    unit_system: UnitSystem,
+) -> dict[vol.Marker, Any]:
+    """Build unit selectors, preferring saved values over HA system defaults."""
+    system_defaults = _system_unit_defaults(unit_system)
     schema: dict[vol.Marker, Any] = {}
     for unit_type, choices in UNIT_CHOICES.items():
         observation = next(
             item for item in OBSERVATIONS if item.unit_type == unit_type
         )
         key = f"unit_{unit_type}"
-        default = observation_unit(settings, observation)
+        legacy_key = f"unit_{observation.key}"
+        default = settings.get(
+            key,
+            settings.get(legacy_key, system_defaults[unit_type]),
+        )
         schema[vol.Required(key, default=default)] = vol.In(
             choices
         )
@@ -107,7 +154,7 @@ class WeeWxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 default=DEFAULT_TOPIC_PREFIX,
             ): str,
         }
-        schema.update(_unit_schema({}))
+        schema.update(_unit_schema({}, self.hass.config.units))
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(schema),
@@ -164,7 +211,7 @@ class WeeWxOptionsFlow(config_entries.OptionsFlow):
                 default=settings[CONF_TOPIC_PREFIX],
             ): str,
         }
-        schema.update(_unit_schema(settings))
+        schema.update(_unit_schema(settings, self.hass.config.units))
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(schema),

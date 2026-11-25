@@ -60,42 +60,6 @@
       },
       "outside_alarm_2": {
         "name": "Outdoor alarm 2"
-      },
-      "soil_leaf_alarm_1": {
-        "name": "Soil/leaf alarm 1"
-      },
-      "soil_leaf_alarm_2": {
-        "name": "Soil/leaf alarm 2"
-      },
-      "soil_leaf_alarm_3": {
-        "name": "Soil/leaf alarm 3"
-      },
-      "soil_leaf_alarm_4": {
-        "name": "Soil/leaf alarm 4"
-      },
-      "extra_alarm_1": {
-        "name": "Extra alarm 1"
-      },
-      "extra_alarm_2": {
-        "name": "Extra alarm 2"
-      },
-      "extra_alarm_3": {
-        "name": "Extra alarm 3"
-      },
-      "extra_alarm_4": {
-        "name": "Extra alarm 4"
-      },
-      "extra_alarm_5": {
-        "name": "Extra alarm 5"
-      },
-      "extra_alarm_6": {
-        "name": "Extra alarm 6"
-      },
-      "extra_alarm_7": {
-        "name": "Extra alarm 7"
-      },
-      "extra_alarm_8": {
-        "name": "Extra alarm 8"
       }
     },
     "sensor": {

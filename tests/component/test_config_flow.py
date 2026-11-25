@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.plugins import enable_custom_integrations
+from homeassistant.util.unit_system import (
+    IMPERIAL_SYSTEM,
+    METRIC_SYSTEM,
+    UnitSystem,
+)
 
+from custom_components.weewx_mqtt_device.config_flow import _unit_schema
 from custom_components.weewx_mqtt_device.const import (
     CONF_DEVICE_NAME,
     CONF_TOPIC_PREFIX,
@@ -25,6 +33,49 @@ def _default_units() -> dict[str, str]:
         )
         for unit_type in UNIT_CHOICES
     }
+
+
+def _schema_defaults(
+    system: UnitSystem,
+    settings: dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Return the default values from a unit selector schema."""
+    schema = _unit_schema(settings or {}, system)
+    return {
+        marker.schema: marker.default() if callable(marker.default) else marker.default
+        for marker in schema
+    }
+
+
+def test_unit_schema_defaults_follow_home_assistant_unit_system():
+    """New stations default to Home Assistant metric or US customary units."""
+    assert _schema_defaults(METRIC_SYSTEM) == {
+        "unit_temperature": "°C",
+        "unit_distance": "m",
+        "unit_pressure": "hPa",
+        "unit_rain": "mm",
+        "unit_rain_rate": "mm/h",
+        "unit_wind_speed": "m/s",
+    }
+    assert _schema_defaults(IMPERIAL_SYSTEM) == {
+        "unit_temperature": "°F",
+        "unit_distance": "ft",
+        "unit_pressure": "inHg",
+        "unit_rain": "in",
+        "unit_rain_rate": "in/h",
+        "unit_wind_speed": "mph",
+    }
+
+
+def test_unit_schema_keeps_saved_station_preferences():
+    """Saved unit selections override later Home Assistant system changes."""
+    defaults = _schema_defaults(
+        IMPERIAL_SYSTEM,
+        {"unit_rain": "cm", "unit_rain_rate": "cm/h"},
+    )
+
+    assert defaults["unit_rain"] == "cm"
+    assert defaults["unit_rain_rate"] == "cm/h"
 
 
 @pytest.mark.asyncio

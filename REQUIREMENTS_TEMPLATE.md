@@ -6,7 +6,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 
 - **Display name**: WeeWX MQTT Device
 - **Domain**: `weewx_mqtt_device`
-- **Version**: `0.3.0` (GitHub tag/release `v0.3`)
+- **Version**: `0.4.0` (GitHub tag/release `v0.4`)
 - **Minimum supported Home Assistant version**: [TODO]
 - **Maintainers/code owners**: `@PacmanForever`
 
@@ -49,7 +49,7 @@ Project requirements for the WeeWX MQTT Home Assistant integration.
 - **Per-instance topic discovery vs. manual topic mapping**: Use the supplied fixed observation mapping with a configurable topic prefix per station. The default prefix is `weewx`.
 - **Payload structure and parsing**: Parse the mapping's numeric payloads as numbers and its timestamp payloads as Unix timestamps. Create each mapped entity after its first valid value; malformed values before that do not create an entity, and malformed values after that make it unavailable and are logged.
 - **Topic mapping source**: The user will provide the current WeeWX MQTT topics and their weather-observation mappings in Catalan; use that mapping as the initial topic/observation mapping.
-- **Weather observations and units**: WeeWX payloads do not include units in the payload, so use units encoded in topic suffixes as source units. Ask for output units during initial station setup and allow changing them later. Default each output unit to the mapped source unit; convert only when the user selects another unit. Select one unit per physical measurement type, shared by all observations of that type (for example, wind speed and gust); rain rate has its own unit type.
+- **Weather observations and units**: WeeWX payloads do not include units in the payload, so use units encoded in topic suffixes as source units. Ask for output units during initial station setup and allow changing them later. For new stations, default output units from Home Assistant's global unit system: metric uses °C, m, hPa, mm, mm/h, and m/s; US customary uses °F, ft, inHg, in, in/h, and mph. Keep saved per-station units unchanged if Home Assistant's global unit system later changes. Convert from the source units to the selected output unit. Select one unit per physical measurement type, shared by all observations of that type (for example, wind speed and gust); rain rate has its own unit type.
 - **Configurable entity metadata**: Device name is selected by the user; model is `Weewx MQTT`; manufacturer is `@pacmanforever`.
 - **Update, availability, and stale-data behavior**: Create mapped entities only after their topic publishes a valid value; valid zero/false values count. A malformed value before creation is logged and ignored; after creation it makes that entity unavailable. A silent topic leaves the last valid state in place (no stale timeout); fields never published do not appear. Preserve repeated updates for rain in the last interval.
 - **Connection and malformed-message error handling**: Depend on Home Assistant's MQTT integration for broker status; log malformed payloads and mark the affected entity unavailable.
@@ -65,23 +65,23 @@ Use the following mapping as the initial configuration for each station. Topic s
 | Observation time | `weewx/dateTime` | Unix timestamp; local time as `HH:MM:SS`. |
 | Sunrise | `weewx/sunrise` | Unix timestamp; local time as `HH:MM`. |
 | Sunset | `weewx/sunset` | Unix timestamp; local time as `HH:MM`. |
-| Cloud base | `weewx/cloudbase_meter` | metres (`m`); round to 0 decimal places. |
+| Cloud base | `weewx/cloudbase_meter` | Source metres; default to m in metric or ft in US customary; round to 0 decimal places. |
 | Forecast icon index | `weewx/forecastIcon` | Numeric index; round to 0 decimal places. |
-| Outdoor temperature | `weewx/outTemp_C` | Celsius (`°C`); round to 1 decimal place. |
-| Heat index | `weewx/heatindex_C` | Celsius (`°C`); round to 1 decimal place. |
-| Wind chill | `weewx/windchill_C` | Celsius (`°C`); round to 1 decimal place. |
+| Outdoor temperature | `weewx/outTemp_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
+| Heat index | `weewx/heatindex_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
+| Wind chill | `weewx/windchill_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
 | Humidity | `weewx/outHumidity` | Percent (`%`); round to 0 decimal places. |
-| Dew point | `weewx/dewpoint_C` | Celsius (`°C`); round to 1 decimal place. |
-| Atmospheric pressure | `weewx/barometer_mbar` | Source millibar (`mbar`), the default; optionally convert to hPa or inHg; round to 0 decimal places. |
-| Current rain rate | `weewx/rainRate_cm_per_hour` | Source centimetres/hour (`cm/h`), the default; optionally convert to mm/h or in/h; round to 1 decimal place. |
-| Rain in last interval | `weewx/rain_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; force entity updates even when the value is unchanged. |
-| Rain in last hour | `weewx/hourRain_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; round to 1 decimal place. |
-| Rain today | `weewx/dayRain_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; round to 1 decimal place. |
-| Rain in last 24 hours | `weewx/rain24_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; round to 1 decimal place. |
-| Rain this month | `weewx/monthRain_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; round to 1 decimal place. |
-| Rain this year | `weewx/yearRain_cm` | Source centimetres (`cm`), the default; optionally convert to mm or inches; round to 1 decimal place. |
-| Wind speed | `weewx/windSpeed_kph` | Kilometres/hour (`km/h`); round to 0 decimal places. |
-| Wind gust (5 min) | `weewx/windGust_kph` | Kilometres/hour (`km/h`); round to 0 decimal places. |
+| Dew point | `weewx/dewpoint_C` | Source °C; output in Home Assistant's temperature unit; round to 1 decimal place. |
+| Atmospheric pressure | `weewx/barometer_mbar` | Source mbar; default to hPa in metric or inHg in US customary; round to 0 decimal places. |
+| Current rain rate | `weewx/rainRate_cm_per_hour` | Source cm/h; default to mm/h in metric or in/h in US customary; round to 1 decimal place. |
+| Rain in last interval | `weewx/rain_cm` | Source cm; default to mm in metric or inches in US customary; force entity updates even when the value is unchanged. |
+| Rain in last hour | `weewx/hourRain_cm` | Source cm; default to mm in metric or inches in US customary; round to 1 decimal place. |
+| Rain today | `weewx/dayRain_cm` | Source cm; default to mm in metric or inches in US customary; round to 1 decimal place. |
+| Rain in last 24 hours | `weewx/rain24_cm` | Source cm; default to mm in metric or inches in US customary; round to 1 decimal place. |
+| Rain this month | `weewx/monthRain_cm` | Source cm; default to mm in metric or inches in US customary; round to 1 decimal place. |
+| Rain this year | `weewx/yearRain_cm` | Source cm; default to mm in metric or inches in US customary; round to 1 decimal place. |
+| Wind speed | `weewx/windSpeed_kph` | Source km/h; default to m/s in metric or mph in US customary; round to 0 decimal places. |
+| Wind gust (5 min) | `weewx/windGust_kph` | Source km/h; default to m/s in metric or mph in US customary; round to 0 decimal places. |
 | Wind direction in degrees | `weewx/windDir` | Degrees; round to 0 decimal places. |
 | Wind direction label | `weewx/windDir` | Derive a 16-point compass direction from the rounded degree value; 0° and 360° map to north. Localize the direction labels for Catalan, Spanish, and English. |
 
@@ -91,11 +91,11 @@ The publisher can also emit the following numeric fields. Create an entity only 
 
 | Observation | WeeWX topic suffix | Initial output and processing |
 | --- | --- | --- |
-| Station pressure | `pressure_mbar` | Source mbar, the default; convert only if another pressure unit is selected. |
-| Altimeter setting | `altimeter_mbar` | Source mbar, the default; convert only if another pressure unit is selected. |
-| Apparent temperature | `appTemp_C` | Convert from °C using the shared temperature setting. |
-| Humidex | `humidex_C` | Convert from °C using the shared temperature setting. |
-| Indoor temperature | `inTemp_C` | Convert from °C using the shared temperature setting. |
+| Station pressure | `pressure_mbar` | Source mbar; default to hPa in metric or inHg in US customary. |
+| Altimeter setting | `altimeter_mbar` | Source mbar; default to hPa in metric or inHg in US customary. |
+| Apparent temperature | `appTemp_C` | Source °C; use Home Assistant's temperature unit. |
+| Humidex | `humidex_C` | Source °C; use Home Assistant's temperature unit. |
+| Indoor temperature | `inTemp_C` | Source °C; use Home Assistant's temperature unit. |
 | Indoor humidity | `inHumidity` | Percent (`%`). |
 | Indoor dew point | `inDewpoint` | Raw numeric value; the topic does not identify its unit. |
 | UV index / high UV | `UV`, `highUV` | Numeric index. |
@@ -104,9 +104,9 @@ The publisher can also emit the following numeric fields. Create an entity only 
 | 10-minute wind speed | `windSpeed10_kph` | Convert from km/h using the shared wind-speed setting. |
 | Wind gust direction | `windGustDir` | Degrees. |
 | Wind run | `windrun_km` | Kilometres (`km`). |
-| Storm rain | `stormRain_cm` | Source centimetres, the default; use the shared rain setting if changed. |
+| Storm rain | `stormRain_cm` | Source cm; default to mm in metric or inches in US customary. |
 | Total rain | `rainTotal` | Raw numeric value; the topic does not identify its unit. |
-| Evapotranspiration | `ET_cm` | Source centimetres, the default; use the shared rain setting if changed. |
+| Evapotranspiration | `ET_cm` | Source cm; default to mm in metric or inches in US customary. |
 | Daily/monthly/yearly evapotranspiration | `dayET`, `monthET`, `yearET` | Raw numeric values; the topics do not identify their units. |
 | Console battery voltage | `consBatteryVoltage_volt` | Volts (`V`). |
 | Outdoor sensor battery status | `outTempBatteryStatus` | Raw numeric status code. |
@@ -114,10 +114,10 @@ The publisher can also emit the following numeric fields. Create an entity only 
 | Forecast rule / trend icon | `forecastRule`, `trendIcon` | Raw numeric code. |
 | High/low outdoor temperature | `highOutTemp`, `lowOutTemp` | Raw numeric values; the topics do not identify their units. |
 | Water temperature | `watertemp` | Raw numeric value; the topic does not identify its unit. |
-| Leaf temperature | `leafTemp1_C` | Convert from °C using the shared temperature setting. |
+| Leaf temperature | `leafTemp1_C` | Source °C; use Home Assistant's temperature unit. |
 | Archive interval | `interval_minute` | Minutes (`min`). |
 | Storm start | `stormStart` | Unix timestamp; display as local date/time. |
-| Alarm states | `rainAlarm`, `insideAlarm`, `outsideAlarm1`–`2`, `extraAlarm1`–`8`, `soilLeafAlarm1`–`4` | Binary problem sensors; nonzero means active. |
+| Alarm states | `rainAlarm`, `insideAlarm`, `outsideAlarm1`–`2` | Binary problem sensors; nonzero means active. |
 | Publisher diagnostics | `delay`, `ptr`, `status`, `usUnits` | Raw numeric values without a unit. |
 
 For the 16-point wind direction, use the mapping's sector boundaries after rounding the input to an integer: N for values greater than -1 through 11 and greater than 348.5 through 360; then NNE through NNW in 22.5-degree sectors using the provided boundaries (11, 33.5, 56, 78.5, 101, 123.5, 146, 168.5, 191, 213.5, 236, 258.5, 281, 303.5, 326, 348.5). The Catalan labels in the supplied mapping include SSO, SO, OSO, O, ONO, NO, and NNO; provide their localized equivalents in the other supported languages.
